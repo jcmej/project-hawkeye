@@ -1,0 +1,667 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		D910681F30685F7900A68927 /* ARCameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D910681E30685F7900A68927 /* ARCameraManager.swift */; };
+		D91936753067E6700078D172 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D91936743067E6700078D172 /* Assets.xcassets */; };
+		D91936783067E6700078D172 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D91936773067E6700078D172 /* Preview Assets.xcassets */; };
+		D91936823067E6700078D172 /* CarVisionPhoneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91936813067E6700078D172 /* CarVisionPhoneTests.swift */; };
+		D919368C3067E6700078D172 /* CarVisionPhoneUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D919368B3067E6700078D172 /* CarVisionPhoneUITests.swift */; };
+		D919368E3067E6700078D172 /* CarVisionPhoneUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D919368D3067E6700078D172 /* CarVisionPhoneUITestsLaunchTests.swift */; };
+		D91936A73067E74B0078D172 /* ArenaRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D919369A3067E74B0078D172 /* ArenaRenderer.swift */; };
+		D91936A83067E74B0078D172 /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = D919369B3067E74B0078D172 /* Geometry.swift */; };
+		D91936A93067E74B0078D172 /* Messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = D919369C3067E74B0078D172 /* Messages.swift */; };
+		D91936AA3067E74B0078D172 /* ArucoBridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = D919369F3067E74B0078D172 /* ArucoBridge.mm */; };
+		D91936AB3067E74B0078D172 /* CameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91936A03067E74B0078D172 /* CameraManager.swift */; };
+		D91936AC3067E74B0078D172 /* CarVisionPhoneApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91936A23067E74B0078D172 /* CarVisionPhoneApp.swift */; };
+		D91936AD3067E74B0078D172 /* ObservationSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91936A33067E74B0078D172 /* ObservationSender.swift */; };
+		D91936AE3067E74B0078D172 /* Perception.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91936A43067E74B0078D172 /* Perception.swift */; };
+		D91936AF3067E74B0078D172 /* PhoneModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91936A53067E74B0078D172 /* PhoneModel.swift */; };
+		D928AAD23067EEC8006E7F53 /* opencv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D928AAD13067EEC8006E7F53 /* opencv2.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		D919367E3067E6700078D172 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D91936653067E66F0078D172 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D919366C3067E66F0078D172;
+			remoteInfo = CarVisionPhone;
+		};
+		D91936883067E6700078D172 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D91936653067E66F0078D172 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D919366C3067E66F0078D172;
+			remoteInfo = CarVisionPhone;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		D910681E30685F7900A68927 /* ARCameraManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARCameraManager.swift; sourceTree = "<group>"; };
+		D919366D3067E66F0078D172 /* CarVisionPhone.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CarVisionPhone.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D91936743067E6700078D172 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		D91936773067E6700078D172 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		D919367D3067E6700078D172 /* CarVisionPhoneTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CarVisionPhoneTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D91936813067E6700078D172 /* CarVisionPhoneTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarVisionPhoneTests.swift; sourceTree = "<group>"; };
+		D91936873067E6700078D172 /* CarVisionPhoneUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CarVisionPhoneUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D919368B3067E6700078D172 /* CarVisionPhoneUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarVisionPhoneUITests.swift; sourceTree = "<group>"; };
+		D919368D3067E6700078D172 /* CarVisionPhoneUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarVisionPhoneUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		D919369A3067E74B0078D172 /* ArenaRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArenaRenderer.swift; sourceTree = "<group>"; };
+		D919369B3067E74B0078D172 /* Geometry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Geometry.swift; sourceTree = "<group>"; };
+		D919369C3067E74B0078D172 /* Messages.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Messages.swift; sourceTree = "<group>"; };
+		D919369E3067E74B0078D172 /* ArucoBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArucoBridge.h; sourceTree = "<group>"; };
+		D919369F3067E74B0078D172 /* ArucoBridge.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ArucoBridge.mm; sourceTree = "<group>"; };
+		D91936A03067E74B0078D172 /* CameraManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraManager.swift; sourceTree = "<group>"; };
+		D91936A13067E74B0078D172 /* CarVisionPhone-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CarVisionPhone-Bridging-Header.h"; sourceTree = "<group>"; };
+		D91936A23067E74B0078D172 /* CarVisionPhoneApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CarVisionPhoneApp.swift; sourceTree = "<group>"; };
+		D91936A33067E74B0078D172 /* ObservationSender.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObservationSender.swift; sourceTree = "<group>"; };
+		D91936A43067E74B0078D172 /* Perception.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Perception.swift; sourceTree = "<group>"; };
+		D91936A53067E74B0078D172 /* PhoneModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhoneModel.swift; sourceTree = "<group>"; };
+		D928AACD3067EC40006E7F53 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		D928AAD13067EEC8006E7F53 /* opencv2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = opencv2.framework; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D919366A3067E66F0078D172 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D928AAD23067EEC8006E7F53 /* opencv2.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D919367A3067E6700078D172 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D91936843067E6700078D172 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		D91936643067E66F0078D172 = {
+			isa = PBXGroup;
+			children = (
+				D919366F3067E66F0078D172 /* CarVisionPhone */,
+				D91936803067E6700078D172 /* CarVisionPhoneTests */,
+				D919368A3067E6700078D172 /* CarVisionPhoneUITests */,
+				D919366E3067E66F0078D172 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		D919366E3067E66F0078D172 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D919366D3067E66F0078D172 /* CarVisionPhone.app */,
+				D919367D3067E6700078D172 /* CarVisionPhoneTests.xctest */,
+				D91936873067E6700078D172 /* CarVisionPhoneUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D919366F3067E66F0078D172 /* CarVisionPhone */ = {
+			isa = PBXGroup;
+			children = (
+				D928AACD3067EC40006E7F53 /* Info.plist */,
+				D928AAD13067EEC8006E7F53 /* opencv2.framework */,
+				D91936A63067E74B0078D172 /* PhoneApp */,
+				D919369D3067E74B0078D172 /* Shared */,
+				D91936743067E6700078D172 /* Assets.xcassets */,
+				D91936763067E6700078D172 /* Preview Content */,
+			);
+			path = CarVisionPhone;
+			sourceTree = "<group>";
+		};
+		D91936763067E6700078D172 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				D91936773067E6700078D172 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		D91936803067E6700078D172 /* CarVisionPhoneTests */ = {
+			isa = PBXGroup;
+			children = (
+				D91936813067E6700078D172 /* CarVisionPhoneTests.swift */,
+			);
+			path = CarVisionPhoneTests;
+			sourceTree = "<group>";
+		};
+		D919368A3067E6700078D172 /* CarVisionPhoneUITests */ = {
+			isa = PBXGroup;
+			children = (
+				D919368B3067E6700078D172 /* CarVisionPhoneUITests.swift */,
+				D919368D3067E6700078D172 /* CarVisionPhoneUITestsLaunchTests.swift */,
+			);
+			path = CarVisionPhoneUITests;
+			sourceTree = "<group>";
+		};
+		D919369D3067E74B0078D172 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				D919369A3067E74B0078D172 /* ArenaRenderer.swift */,
+				D919369B3067E74B0078D172 /* Geometry.swift */,
+				D919369C3067E74B0078D172 /* Messages.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		D91936A63067E74B0078D172 /* PhoneApp */ = {
+			isa = PBXGroup;
+			children = (
+				D919369E3067E74B0078D172 /* ArucoBridge.h */,
+				D919369F3067E74B0078D172 /* ArucoBridge.mm */,
+				D91936A03067E74B0078D172 /* CameraManager.swift */,
+				D910681E30685F7900A68927 /* ARCameraManager.swift */,
+				D91936A13067E74B0078D172 /* CarVisionPhone-Bridging-Header.h */,
+				D91936A23067E74B0078D172 /* CarVisionPhoneApp.swift */,
+				D91936A33067E74B0078D172 /* ObservationSender.swift */,
+				D91936A43067E74B0078D172 /* Perception.swift */,
+				D91936A53067E74B0078D172 /* PhoneModel.swift */,
+			);
+			path = PhoneApp;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		D919366C3067E66F0078D172 /* CarVisionPhone */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D91936913067E6700078D172 /* Build configuration list for PBXNativeTarget "CarVisionPhone" */;
+			buildPhases = (
+				D91936693067E66F0078D172 /* Sources */,
+				D919366A3067E66F0078D172 /* Frameworks */,
+				D919366B3067E66F0078D172 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CarVisionPhone;
+			productName = CarVisionPhone;
+			productReference = D919366D3067E66F0078D172 /* CarVisionPhone.app */;
+			productType = "com.apple.product-type.application";
+		};
+		D919367C3067E6700078D172 /* CarVisionPhoneTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D91936943067E6700078D172 /* Build configuration list for PBXNativeTarget "CarVisionPhoneTests" */;
+			buildPhases = (
+				D91936793067E6700078D172 /* Sources */,
+				D919367A3067E6700078D172 /* Frameworks */,
+				D919367B3067E6700078D172 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D919367F3067E6700078D172 /* PBXTargetDependency */,
+			);
+			name = CarVisionPhoneTests;
+			productName = CarVisionPhoneTests;
+			productReference = D919367D3067E6700078D172 /* CarVisionPhoneTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		D91936863067E6700078D172 /* CarVisionPhoneUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D91936973067E6700078D172 /* Build configuration list for PBXNativeTarget "CarVisionPhoneUITests" */;
+			buildPhases = (
+				D91936833067E6700078D172 /* Sources */,
+				D91936843067E6700078D172 /* Frameworks */,
+				D91936853067E6700078D172 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D91936893067E6700078D172 /* PBXTargetDependency */,
+			);
+			name = CarVisionPhoneUITests;
+			productName = CarVisionPhoneUITests;
+			productReference = D91936873067E6700078D172 /* CarVisionPhoneUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D91936653067E66F0078D172 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1540;
+				LastUpgradeCheck = 1540;
+				TargetAttributes = {
+					D919366C3067E66F0078D172 = {
+						CreatedOnToolsVersion = 15.4;
+					};
+					D919367C3067E6700078D172 = {
+						CreatedOnToolsVersion = 15.4;
+						TestTargetID = D919366C3067E66F0078D172;
+					};
+					D91936863067E6700078D172 = {
+						CreatedOnToolsVersion = 15.4;
+						TestTargetID = D919366C3067E66F0078D172;
+					};
+				};
+			};
+			buildConfigurationList = D91936683067E66F0078D172 /* Build configuration list for PBXProject "CarVisionPhone" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = D91936643067E66F0078D172;
+			productRefGroup = D919366E3067E66F0078D172 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D919366C3067E66F0078D172 /* CarVisionPhone */,
+				D919367C3067E6700078D172 /* CarVisionPhoneTests */,
+				D91936863067E6700078D172 /* CarVisionPhoneUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		D919366B3067E66F0078D172 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D91936783067E6700078D172 /* Preview Assets.xcassets in Resources */,
+				D91936753067E6700078D172 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D919367B3067E6700078D172 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D91936853067E6700078D172 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D91936693067E66F0078D172 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D91936A73067E74B0078D172 /* ArenaRenderer.swift in Sources */,
+				D91936AC3067E74B0078D172 /* CarVisionPhoneApp.swift in Sources */,
+				D91936AA3067E74B0078D172 /* ArucoBridge.mm in Sources */,
+				D91936A93067E74B0078D172 /* Messages.swift in Sources */,
+				D91936AE3067E74B0078D172 /* Perception.swift in Sources */,
+				D910681F30685F7900A68927 /* ARCameraManager.swift in Sources */,
+				D91936A83067E74B0078D172 /* Geometry.swift in Sources */,
+				D91936AB3067E74B0078D172 /* CameraManager.swift in Sources */,
+				D91936AD3067E74B0078D172 /* ObservationSender.swift in Sources */,
+				D91936AF3067E74B0078D172 /* PhoneModel.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D91936793067E6700078D172 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D91936823067E6700078D172 /* CarVisionPhoneTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D91936833067E6700078D172 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D919368E3067E6700078D172 /* CarVisionPhoneUITestsLaunchTests.swift in Sources */,
+				D919368C3067E6700078D172 /* CarVisionPhoneUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		D919367F3067E6700078D172 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D919366C3067E66F0078D172 /* CarVisionPhone */;
+			targetProxy = D919367E3067E6700078D172 /* PBXContainerItemProxy */;
+		};
+		D91936893067E6700078D172 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D919366C3067E66F0078D172 /* CarVisionPhone */;
+			targetProxy = D91936883067E6700078D172 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		D919368F3067E6700078D172 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		D91936903067E6700078D172 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		D91936923067E6700078D172 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"CarVisionPhone/Preview Content\"";
+				DEVELOPMENT_TEAM = YD6F6J96Q6;
+				ENABLE_PREVIEWS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/CarVisionPhone",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CarVisionPhone/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Tracks markers in the arena.";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Sends observations to the hub.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = WaffleTech.CarVisionPhone;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "/Users/connorsapp/CarVisionPhone/CarVisionPhone/PhoneApp/CarVisionPhone-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D91936933067E6700078D172 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"CarVisionPhone/Preview Content\"";
+				DEVELOPMENT_TEAM = YD6F6J96Q6;
+				ENABLE_PREVIEWS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/CarVisionPhone",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CarVisionPhone/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Tracks markers in the arena.";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Sends observations to the hub.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = WaffleTech.CarVisionPhone;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "/Users/connorsapp/CarVisionPhone/CarVisionPhone/PhoneApp/CarVisionPhone-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		D91936953067E6700078D172 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = YD6F6J96Q6;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = WaffleTech.CarVisionPhoneTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CarVisionPhone.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CarVisionPhone";
+			};
+			name = Debug;
+		};
+		D91936963067E6700078D172 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = YD6F6J96Q6;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = WaffleTech.CarVisionPhoneTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CarVisionPhone.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CarVisionPhone";
+			};
+			name = Release;
+		};
+		D91936983067E6700078D172 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = YD6F6J96Q6;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = WaffleTech.CarVisionPhoneUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = CarVisionPhone;
+			};
+			name = Debug;
+		};
+		D91936993067E6700078D172 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = YD6F6J96Q6;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = WaffleTech.CarVisionPhoneUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = CarVisionPhone;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		D91936683067E66F0078D172 /* Build configuration list for PBXProject "CarVisionPhone" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D919368F3067E6700078D172 /* Debug */,
+				D91936903067E6700078D172 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D91936913067E6700078D172 /* Build configuration list for PBXNativeTarget "CarVisionPhone" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D91936923067E6700078D172 /* Debug */,
+				D91936933067E6700078D172 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D91936943067E6700078D172 /* Build configuration list for PBXNativeTarget "CarVisionPhoneTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D91936953067E6700078D172 /* Debug */,
+				D91936963067E6700078D172 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D91936973067E6700078D172 /* Build configuration list for PBXNativeTarget "CarVisionPhoneUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D91936983067E6700078D172 /* Debug */,
+				D91936993067E6700078D172 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = D91936653067E66F0078D172 /* Project object */;
+}
