@@ -1,0 +1,974 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		D928AADF3067F136006E7F53 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D928AADE3067F136006E7F53 /* Assets.xcassets */; };
+		D928AAE23067F136006E7F53 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D928AAE13067F136006E7F53 /* Preview Assets.xcassets */; };
+		D928AAED3067F136006E7F53 /* CarVisionHubMacTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D928AAEC3067F136006E7F53 /* CarVisionHubMacTests.swift */; };
+		D928AAF73067F136006E7F53 /* CarVisionHubMacUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D928AAF63067F136006E7F53 /* CarVisionHubMacUITests.swift */; };
+		D928AAF93067F136006E7F53 /* CarVisionHubMacUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D928AAF83067F136006E7F53 /* CarVisionHubMacUITestsLaunchTests.swift */; };
+		D928AB033067F1A8006E7F53 /* CarLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = D928AABB3067EB26006E7F53 /* CarLink.swift */; };
+		D928AB043067F1AF006E7F53 /* CarVisionHubApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D928AABC3067EB26006E7F53 /* CarVisionHubApp.swift */; };
+		D928AB053067F1B3006E7F53 /* Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = D928AABD3067EB26006E7F53 /* Controller.swift */; };
+		D928AB063067F1BD006E7F53 /* Fusion.swift in Sources */ = {isa = PBXBuildFile; fileRef = D928AABE3067EB26006E7F53 /* Fusion.swift */; };
+		D928AB073067F1C1006E7F53 /* HubModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D928AABF3067EB26006E7F53 /* HubModel.swift */; };
+		D928AB083067F1C5006E7F53 /* ObservationReceiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D928AAC03067EB26006E7F53 /* ObservationReceiver.swift */; };
+		D928AB093067F1C9006E7F53 /* Planner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D928AAC13067EB26006E7F53 /* Planner.swift */; };
+		D928AB0A3067F1E0006E7F53 /* ArenaRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D928AAB73067EB26006E7F53 /* ArenaRenderer.swift */; };
+		D928AB0B3067F1E4006E7F53 /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = D928AAB83067EB26006E7F53 /* Geometry.swift */; };
+		D928AB0C3067F1E8006E7F53 /* Messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = D928AAB93067EB26006E7F53 /* Messages.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		D928AA9B3067EAD5006E7F53 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D928AA823067EAD4006E7F53 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D928AA893067EAD4006E7F53;
+			remoteInfo = CarVisionHub;
+		};
+		D928AAA53067EAD5006E7F53 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D928AA823067EAD4006E7F53 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D928AA893067EAD4006E7F53;
+			remoteInfo = CarVisionHub;
+		};
+		D928AAE93067F136006E7F53 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D928AA823067EAD4006E7F53 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D928AAD73067F135006E7F53;
+			remoteInfo = CarVisionHubMac;
+		};
+		D928AAF33067F136006E7F53 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D928AA823067EAD4006E7F53 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D928AAD73067F135006E7F53;
+			remoteInfo = CarVisionHubMac;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		D928AA8A3067EAD4006E7F53 /* CarVisionHub.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CarVisionHub.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D928AA9A3067EAD5006E7F53 /* CarVisionHubTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CarVisionHubTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D928AAA43067EAD5006E7F53 /* CarVisionHubUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CarVisionHubUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D928AAB73067EB26006E7F53 /* ArenaRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArenaRenderer.swift; sourceTree = "<group>"; };
+		D928AAB83067EB26006E7F53 /* Geometry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Geometry.swift; sourceTree = "<group>"; };
+		D928AAB93067EB26006E7F53 /* Messages.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Messages.swift; sourceTree = "<group>"; };
+		D928AABB3067EB26006E7F53 /* CarLink.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CarLink.swift; sourceTree = "<group>"; };
+		D928AABC3067EB26006E7F53 /* CarVisionHubApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CarVisionHubApp.swift; sourceTree = "<group>"; };
+		D928AABD3067EB26006E7F53 /* Controller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Controller.swift; sourceTree = "<group>"; };
+		D928AABE3067EB26006E7F53 /* Fusion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Fusion.swift; sourceTree = "<group>"; };
+		D928AABF3067EB26006E7F53 /* HubModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HubModel.swift; sourceTree = "<group>"; };
+		D928AAC03067EB26006E7F53 /* ObservationReceiver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObservationReceiver.swift; sourceTree = "<group>"; };
+		D928AAC13067EB26006E7F53 /* Planner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Planner.swift; sourceTree = "<group>"; };
+		D928AAD83067F135006E7F53 /* CarVisionHubMac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CarVisionHubMac.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D928AADE3067F136006E7F53 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		D928AAE13067F136006E7F53 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		D928AAE33067F136006E7F53 /* CarVisionHubMac.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CarVisionHubMac.entitlements; sourceTree = "<group>"; };
+		D928AAE83067F136006E7F53 /* CarVisionHubMacTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CarVisionHubMacTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D928AAEC3067F136006E7F53 /* CarVisionHubMacTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarVisionHubMacTests.swift; sourceTree = "<group>"; };
+		D928AAF23067F136006E7F53 /* CarVisionHubMacUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CarVisionHubMacUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D928AAF63067F136006E7F53 /* CarVisionHubMacUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarVisionHubMacUITests.swift; sourceTree = "<group>"; };
+		D928AAF83067F136006E7F53 /* CarVisionHubMacUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarVisionHubMacUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		D928AB0D3067F2BB006E7F53 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D928AA873067EAD4006E7F53 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D928AA973067EAD5006E7F53 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D928AAA13067EAD5006E7F53 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D928AAD53067F135006E7F53 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D928AAE53067F136006E7F53 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D928AAEF3067F136006E7F53 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		D928AA813067EAD4006E7F53 = {
+			isa = PBXGroup;
+			children = (
+				D928AAD93067F135006E7F53 /* CarVisionHubMac */,
+				D928AAEB3067F136006E7F53 /* CarVisionHubMacTests */,
+				D928AAF53067F136006E7F53 /* CarVisionHubMacUITests */,
+				D928AA8B3067EAD4006E7F53 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		D928AA8B3067EAD4006E7F53 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D928AA8A3067EAD4006E7F53 /* CarVisionHub.app */,
+				D928AA9A3067EAD5006E7F53 /* CarVisionHubTests.xctest */,
+				D928AAA43067EAD5006E7F53 /* CarVisionHubUITests.xctest */,
+				D928AAD83067F135006E7F53 /* CarVisionHubMac.app */,
+				D928AAE83067F136006E7F53 /* CarVisionHubMacTests.xctest */,
+				D928AAF23067F136006E7F53 /* CarVisionHubMacUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D928AABA3067EB26006E7F53 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				D928AAB73067EB26006E7F53 /* ArenaRenderer.swift */,
+				D928AAB83067EB26006E7F53 /* Geometry.swift */,
+				D928AAB93067EB26006E7F53 /* Messages.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		D928AAC23067EB26006E7F53 /* HubApp */ = {
+			isa = PBXGroup;
+			children = (
+				D928AABB3067EB26006E7F53 /* CarLink.swift */,
+				D928AABC3067EB26006E7F53 /* CarVisionHubApp.swift */,
+				D928AABD3067EB26006E7F53 /* Controller.swift */,
+				D928AABE3067EB26006E7F53 /* Fusion.swift */,
+				D928AABF3067EB26006E7F53 /* HubModel.swift */,
+				D928AAC03067EB26006E7F53 /* ObservationReceiver.swift */,
+				D928AAC13067EB26006E7F53 /* Planner.swift */,
+			);
+			path = HubApp;
+			sourceTree = "<group>";
+		};
+		D928AAD93067F135006E7F53 /* CarVisionHubMac */ = {
+			isa = PBXGroup;
+			children = (
+				D928AB0D3067F2BB006E7F53 /* Info.plist */,
+				D928AADE3067F136006E7F53 /* Assets.xcassets */,
+				D928AAC23067EB26006E7F53 /* HubApp */,
+				D928AABA3067EB26006E7F53 /* Shared */,
+				D928AAE33067F136006E7F53 /* CarVisionHubMac.entitlements */,
+				D928AAE03067F136006E7F53 /* Preview Content */,
+			);
+			path = CarVisionHubMac;
+			sourceTree = "<group>";
+		};
+		D928AAE03067F136006E7F53 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				D928AAE13067F136006E7F53 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		D928AAEB3067F136006E7F53 /* CarVisionHubMacTests */ = {
+			isa = PBXGroup;
+			children = (
+				D928AAEC3067F136006E7F53 /* CarVisionHubMacTests.swift */,
+			);
+			path = CarVisionHubMacTests;
+			sourceTree = "<group>";
+		};
+		D928AAF53067F136006E7F53 /* CarVisionHubMacUITests */ = {
+			isa = PBXGroup;
+			children = (
+				D928AAF63067F136006E7F53 /* CarVisionHubMacUITests.swift */,
+				D928AAF83067F136006E7F53 /* CarVisionHubMacUITestsLaunchTests.swift */,
+			);
+			path = CarVisionHubMacUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		D928AA893067EAD4006E7F53 /* CarVisionHub */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D928AAAE3067EAD5006E7F53 /* Build configuration list for PBXNativeTarget "CarVisionHub" */;
+			buildPhases = (
+				D928AA863067EAD4006E7F53 /* Sources */,
+				D928AA873067EAD4006E7F53 /* Frameworks */,
+				D928AA883067EAD4006E7F53 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CarVisionHub;
+			productName = CarVisionHub;
+			productReference = D928AA8A3067EAD4006E7F53 /* CarVisionHub.app */;
+			productType = "com.apple.product-type.application";
+		};
+		D928AA993067EAD5006E7F53 /* CarVisionHubTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D928AAB13067EAD5006E7F53 /* Build configuration list for PBXNativeTarget "CarVisionHubTests" */;
+			buildPhases = (
+				D928AA963067EAD5006E7F53 /* Sources */,
+				D928AA973067EAD5006E7F53 /* Frameworks */,
+				D928AA983067EAD5006E7F53 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D928AA9C3067EAD5006E7F53 /* PBXTargetDependency */,
+			);
+			name = CarVisionHubTests;
+			productName = CarVisionHubTests;
+			productReference = D928AA9A3067EAD5006E7F53 /* CarVisionHubTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		D928AAA33067EAD5006E7F53 /* CarVisionHubUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D928AAB43067EAD5006E7F53 /* Build configuration list for PBXNativeTarget "CarVisionHubUITests" */;
+			buildPhases = (
+				D928AAA03067EAD5006E7F53 /* Sources */,
+				D928AAA13067EAD5006E7F53 /* Frameworks */,
+				D928AAA23067EAD5006E7F53 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D928AAA63067EAD5006E7F53 /* PBXTargetDependency */,
+			);
+			name = CarVisionHubUITests;
+			productName = CarVisionHubUITests;
+			productReference = D928AAA43067EAD5006E7F53 /* CarVisionHubUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		D928AAD73067F135006E7F53 /* CarVisionHubMac */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D928AAFA3067F136006E7F53 /* Build configuration list for PBXNativeTarget "CarVisionHubMac" */;
+			buildPhases = (
+				D928AAD43067F135006E7F53 /* Sources */,
+				D928AAD53067F135006E7F53 /* Frameworks */,
+				D928AAD63067F135006E7F53 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CarVisionHubMac;
+			productName = CarVisionHubMac;
+			productReference = D928AAD83067F135006E7F53 /* CarVisionHubMac.app */;
+			productType = "com.apple.product-type.application";
+		};
+		D928AAE73067F136006E7F53 /* CarVisionHubMacTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D928AAFD3067F136006E7F53 /* Build configuration list for PBXNativeTarget "CarVisionHubMacTests" */;
+			buildPhases = (
+				D928AAE43067F136006E7F53 /* Sources */,
+				D928AAE53067F136006E7F53 /* Frameworks */,
+				D928AAE63067F136006E7F53 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D928AAEA3067F136006E7F53 /* PBXTargetDependency */,
+			);
+			name = CarVisionHubMacTests;
+			productName = CarVisionHubMacTests;
+			productReference = D928AAE83067F136006E7F53 /* CarVisionHubMacTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		D928AAF13067F136006E7F53 /* CarVisionHubMacUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D928AB003067F136006E7F53 /* Build configuration list for PBXNativeTarget "CarVisionHubMacUITests" */;
+			buildPhases = (
+				D928AAEE3067F136006E7F53 /* Sources */,
+				D928AAEF3067F136006E7F53 /* Frameworks */,
+				D928AAF03067F136006E7F53 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D928AAF43067F136006E7F53 /* PBXTargetDependency */,
+			);
+			name = CarVisionHubMacUITests;
+			productName = CarVisionHubMacUITests;
+			productReference = D928AAF23067F136006E7F53 /* CarVisionHubMacUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D928AA823067EAD4006E7F53 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1540;
+				LastUpgradeCheck = 1540;
+				TargetAttributes = {
+					D928AA893067EAD4006E7F53 = {
+						CreatedOnToolsVersion = 15.4;
+					};
+					D928AA993067EAD5006E7F53 = {
+						CreatedOnToolsVersion = 15.4;
+						TestTargetID = D928AA893067EAD4006E7F53;
+					};
+					D928AAA33067EAD5006E7F53 = {
+						CreatedOnToolsVersion = 15.4;
+						TestTargetID = D928AA893067EAD4006E7F53;
+					};
+					D928AAD73067F135006E7F53 = {
+						CreatedOnToolsVersion = 15.4;
+					};
+					D928AAE73067F136006E7F53 = {
+						CreatedOnToolsVersion = 15.4;
+						TestTargetID = D928AAD73067F135006E7F53;
+					};
+					D928AAF13067F136006E7F53 = {
+						CreatedOnToolsVersion = 15.4;
+						TestTargetID = D928AAD73067F135006E7F53;
+					};
+				};
+			};
+			buildConfigurationList = D928AA853067EAD4006E7F53 /* Build configuration list for PBXProject "CarVisionHub" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = D928AA813067EAD4006E7F53;
+			productRefGroup = D928AA8B3067EAD4006E7F53 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D928AA893067EAD4006E7F53 /* CarVisionHub */,
+				D928AA993067EAD5006E7F53 /* CarVisionHubTests */,
+				D928AAA33067EAD5006E7F53 /* CarVisionHubUITests */,
+				D928AAD73067F135006E7F53 /* CarVisionHubMac */,
+				D928AAE73067F136006E7F53 /* CarVisionHubMacTests */,
+				D928AAF13067F136006E7F53 /* CarVisionHubMacUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		D928AA883067EAD4006E7F53 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D928AA983067EAD5006E7F53 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D928AAA23067EAD5006E7F53 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D928AAD63067F135006E7F53 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D928AAE23067F136006E7F53 /* Preview Assets.xcassets in Resources */,
+				D928AADF3067F136006E7F53 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D928AAE63067F136006E7F53 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D928AAF03067F136006E7F53 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D928AA863067EAD4006E7F53 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D928AA963067EAD5006E7F53 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D928AAA03067EAD5006E7F53 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D928AAD43067F135006E7F53 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D928AB093067F1C9006E7F53 /* Planner.swift in Sources */,
+				D928AB053067F1B3006E7F53 /* Controller.swift in Sources */,
+				D928AB083067F1C5006E7F53 /* ObservationReceiver.swift in Sources */,
+				D928AB043067F1AF006E7F53 /* CarVisionHubApp.swift in Sources */,
+				D928AB0A3067F1E0006E7F53 /* ArenaRenderer.swift in Sources */,
+				D928AB033067F1A8006E7F53 /* CarLink.swift in Sources */,
+				D928AB063067F1BD006E7F53 /* Fusion.swift in Sources */,
+				D928AB0C3067F1E8006E7F53 /* Messages.swift in Sources */,
+				D928AB0B3067F1E4006E7F53 /* Geometry.swift in Sources */,
+				D928AB073067F1C1006E7F53 /* HubModel.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D928AAE43067F136006E7F53 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D928AAED3067F136006E7F53 /* CarVisionHubMacTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D928AAEE3067F136006E7F53 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D928AAF73067F136006E7F53 /* CarVisionHubMacUITests.swift in Sources */,
+				D928AAF93067F136006E7F53 /* CarVisionHubMacUITestsLaunchTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		D928AA9C3067EAD5006E7F53 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D928AA893067EAD4006E7F53 /* CarVisionHub */;
+			targetProxy = D928AA9B3067EAD5006E7F53 /* PBXContainerItemProxy */;
+		};
+		D928AAA63067EAD5006E7F53 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D928AA893067EAD4006E7F53 /* CarVisionHub */;
+			targetProxy = D928AAA53067EAD5006E7F53 /* PBXContainerItemProxy */;
+		};
+		D928AAEA3067F136006E7F53 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D928AAD73067F135006E7F53 /* CarVisionHubMac */;
+			targetProxy = D928AAE93067F136006E7F53 /* PBXContainerItemProxy */;
+		};
+		D928AAF43067F136006E7F53 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D928AAD73067F135006E7F53 /* CarVisionHubMac */;
+			targetProxy = D928AAF33067F136006E7F53 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		D928AAAC3067EAD5006E7F53 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		D928AAAD3067EAD5006E7F53 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		D928AAAF3067EAD5006E7F53 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = CarVisionHub/CarVisionHub.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"CarVisionHub/Preview Content\"";
+				DEVELOPMENT_TEAM = YD6F6J96Q6;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CarVisionHub/Info.plist;
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Sends observations to the hub";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = WaffleTech.CarVisionHub;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D928AAB03067EAD5006E7F53 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = CarVisionHub/CarVisionHub.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"CarVisionHub/Preview Content\"";
+				DEVELOPMENT_TEAM = YD6F6J96Q6;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CarVisionHub/Info.plist;
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Sends observations to the hub";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = WaffleTech.CarVisionHub;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		D928AAB23067EAD5006E7F53 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = YD6F6J96Q6;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = WaffleTech.CarVisionHubTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CarVisionHub.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CarVisionHub";
+			};
+			name = Debug;
+		};
+		D928AAB33067EAD5006E7F53 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = YD6F6J96Q6;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = WaffleTech.CarVisionHubTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CarVisionHub.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CarVisionHub";
+			};
+			name = Release;
+		};
+		D928AAB53067EAD5006E7F53 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = YD6F6J96Q6;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = WaffleTech.CarVisionHubUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = CarVisionHub;
+			};
+			name = Debug;
+		};
+		D928AAB63067EAD5006E7F53 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = YD6F6J96Q6;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = WaffleTech.CarVisionHubUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = CarVisionHub;
+			};
+			name = Release;
+		};
+		D928AAFB3067F136006E7F53 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = CarVisionHubMac/CarVisionHubMac.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"CarVisionHubMac/Preview Content\"";
+				DEVELOPMENT_TEAM = YD6F6J96Q6;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CarVisionHubMac/Info.plist;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Sends observations to the hub.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = WaffleTech.CarVisionHubMac;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		D928AAFC3067F136006E7F53 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = CarVisionHubMac/CarVisionHubMac.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"CarVisionHubMac/Preview Content\"";
+				DEVELOPMENT_TEAM = YD6F6J96Q6;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CarVisionHubMac/Info.plist;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Sends observations to the hub.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = WaffleTech.CarVisionHubMac;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		D928AAFE3067F136006E7F53 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = YD6F6J96Q6;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = WaffleTech.CarVisionHubMacTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CarVisionHubMac.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CarVisionHubMac";
+			};
+			name = Debug;
+		};
+		D928AAFF3067F136006E7F53 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = YD6F6J96Q6;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = WaffleTech.CarVisionHubMacTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CarVisionHubMac.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CarVisionHubMac";
+			};
+			name = Release;
+		};
+		D928AB013067F136006E7F53 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = YD6F6J96Q6;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = WaffleTech.CarVisionHubMacUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = CarVisionHubMac;
+			};
+			name = Debug;
+		};
+		D928AB023067F136006E7F53 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = YD6F6J96Q6;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = WaffleTech.CarVisionHubMacUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = CarVisionHubMac;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		D928AA853067EAD4006E7F53 /* Build configuration list for PBXProject "CarVisionHub" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D928AAAC3067EAD5006E7F53 /* Debug */,
+				D928AAAD3067EAD5006E7F53 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D928AAAE3067EAD5006E7F53 /* Build configuration list for PBXNativeTarget "CarVisionHub" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D928AAAF3067EAD5006E7F53 /* Debug */,
+				D928AAB03067EAD5006E7F53 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D928AAB13067EAD5006E7F53 /* Build configuration list for PBXNativeTarget "CarVisionHubTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D928AAB23067EAD5006E7F53 /* Debug */,
+				D928AAB33067EAD5006E7F53 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D928AAB43067EAD5006E7F53 /* Build configuration list for PBXNativeTarget "CarVisionHubUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D928AAB53067EAD5006E7F53 /* Debug */,
+				D928AAB63067EAD5006E7F53 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D928AAFA3067F136006E7F53 /* Build configuration list for PBXNativeTarget "CarVisionHubMac" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D928AAFB3067F136006E7F53 /* Debug */,
+				D928AAFC3067F136006E7F53 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D928AAFD3067F136006E7F53 /* Build configuration list for PBXNativeTarget "CarVisionHubMacTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D928AAFE3067F136006E7F53 /* Debug */,
+				D928AAFF3067F136006E7F53 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D928AB003067F136006E7F53 /* Build configuration list for PBXNativeTarget "CarVisionHubMacUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D928AB013067F136006E7F53 /* Debug */,
+				D928AB023067F136006E7F53 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = D928AA823067EAD4006E7F53 /* Project object */;
+}
