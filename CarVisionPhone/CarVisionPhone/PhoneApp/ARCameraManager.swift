@@ -8,6 +8,8 @@ struct ARProjection {
     var floor: [CGPoint]
     /// The same corners lifted to the car marker's height.
     var car: [CGPoint]
+    /// The pinned goal projected into this frame, if a goal is pinned.
+    var goal: CGPoint?
 }
 
 struct ARCalibrationStatus: Equatable {
@@ -18,6 +20,8 @@ struct ARCalibrationStatus: Equatable {
     var captured: [Int] = []
     /// Samples collected for corners currently being pinned (0...needed).
     var progress: [Int: Int] = [:]
+    /// True once the goal is pinned (by scanning its marker or tapping).
+    var goalPinned = false
     /// Measured by ARKit, in cm: corner 2→3 and 2→5.
     var measuredWidth: Double?
     var measuredHeight: Double?
@@ -58,9 +62,9 @@ private struct FrameGeometry {
     }
 }
 
-/// Runs an ARKit world-tracking session. Corners are pinned in 3D by walking the
-/// phone up to each corner marker (or tapping the floor), after which they are
-/// projected into every frame, even when off-screen.
+/// Runs an ARKit world-tracking session. Corners (and the goal) are pinned in 3D
+/// by walking the phone up to each marker, after which they are projected into
+/// every frame, even when off-screen. The goal can also be placed by tapping.
 final class ARCameraManager: NSObject, ARSessionDelegate {
     let sceneView = ARSCNView(frame: .zero)
     private let queue = DispatchQueue(label: "ar.frames", qos: .userInteractive)
@@ -82,6 +86,7 @@ final class ARCameraManager: NSObject, ARSessionDelegate {
     // AR-queue state
     private var floorY: Float?
     private var corners: [Int: simd_float3] = [:]
+    private var goal: simd_float3?
     private var samples: [Int: [simd_float3]] = [:]
     private var lastProcessed: TimeInterval = 0
     private var lastStatusPush: TimeInterval = 0
@@ -89,6 +94,7 @@ final class ARCameraManager: NSObject, ARSessionDelegate {
 
     // Main-thread state
     private var cornerNodes: [Int: [SCNNode]] = [:]
+    private var goalNodes: [SCNNode] = []
     private var outlineNodes: [SCNNode] = []
 
     private let neededSamples = 12
@@ -117,16 +123,30 @@ final class ARCameraManager: NSObject, ARSessionDelegate {
         outlineNodes = []
     }
 
-    /// Measure-app style: tap the floor to pin the next missing corner (main thread).
-    func placeNextCorner(atViewPoint point: CGPoint) {
+    /// Forget the pinned goal (main thread). Scan the goal marker or tap to pin a new one.
+    func resetGoal() {
+        queue.async {
+            self.goal = nil
+            self.samples[MarkerIDs.goal] = nil
+            self.status.progress[MarkerIDs.goal] = nil
+            self.status.goalPinned = false
+        }
+        goalNodes.forEach { $0.removeFromParentNode() }
+        goalNodes = []
+    }
+
+    /// Measure-app style: pin (or move) the goal to the tapped spot on the floor (main thread).
+    /// Returns false if nothing on the floor was hit.
+    @discardableResult
+    func placeGoal(atViewPoint point: CGPoint) -> Bool {
         guard let query = sceneView.raycastQuery(from: point, allowing: .estimatedPlane, alignment: .horizontal),
-              let hit = sceneView.session.raycast(query).first else { return }
+              let hit = sceneView.session.raycast(query).first else { return false }
         var p = simd_make_float3(hit.worldTransform.columns.3)
         queue.async {
-            guard let id = MarkerIDs.corners.first(where: { self.corners[$0] == nil }) else { return }
             if let fy = self.floorY { p.y = fy }
-            self.place(id, at: p)
+            self.pinGoal(at: p)
         }
+        return true
     }
 
     /// Lock exposure, white balance, and focus (for background subtraction).
@@ -168,8 +188,8 @@ final class ARCameraManager: NSObject, ARSessionDelegate {
         // Do not keep a reference to `frame` beyond this call (ARKit stalls if frames are retained).
         let markers = onFrame?(frame.capturedImage, t, projection) ?? []
 
-        if corners.count < 4 && status.trackingNormal {
-            absorbCornerMarkers(markers, geo)
+        if status.trackingNormal && (corners.count < 4 || goal == nil) {
+            absorbMarkers(markers, geo)
         }
 
         if t - lastStatusPush > 0.2 {
@@ -208,11 +228,14 @@ final class ARCameraManager: NSObject, ARSessionDelegate {
         }
     }
 
-    private func absorbCornerMarkers(_ markers: [ArucoMarker], _ geo: FrameGeometry) {
+    /// Pins corner and goal markers seen up close. Each needs 12 readings that agree within 2 cm.
+    private func absorbMarkers(_ markers: [ArucoMarker], _ geo: FrameGeometry) {
         guard let fy = floorY else { return }
         for m in markers {
             let id = Int(m.markerId)
-            guard MarkerIDs.corners.contains(id), corners[id] == nil else { continue }
+            let wanted = (MarkerIDs.corners.contains(id) && corners[id] == nil)
+                || (id == MarkerIDs.goal && goal == nil)
+            guard wanted else { continue }
             guard minSide(m) >= minMarkerSidePx else { continue }
             let center = CGPoint(x: (m.c0.x + m.c1.x + m.c2.x + m.c3.x) / 4,
                                  y: (m.c0.y + m.c1.y + m.c2.y + m.c3.y) / 4)
@@ -227,7 +250,9 @@ final class ARCameraManager: NSObject, ARSessionDelegate {
             if s.count == neededSamples {
                 let mean = s.reduce(simd_float3(repeating: 0), +) / Float(s.count)
                 let spread = s.map { simd_distance($0, mean) }.max() ?? 1
-                if spread < maxSpread { place(id, at: mean) }
+                if spread < maxSpread {
+                    if id == MarkerIDs.goal { pinGoal(at: mean) } else { place(id, at: mean) }
+                }
             }
         }
     }
@@ -239,6 +264,14 @@ final class ARCameraManager: NSObject, ARSessionDelegate {
         updateMeasured()
         let all = corners
         DispatchQueue.main.async { self.drawCorner(id, p, all: all) }
+    }
+
+    private func pinGoal(at p: simd_float3) {
+        goal = p
+        samples[MarkerIDs.goal] = nil
+        status.progress[MarkerIDs.goal] = nil
+        status.goalPinned = true
+        DispatchQueue.main.async { self.drawGoal(p) }
     }
 
     private func updateMeasured() {
@@ -264,7 +297,7 @@ final class ARCameraManager: NSObject, ARSessionDelegate {
             floor.append(a)
             car.append(b)
         }
-        return ARProjection(floor: floor, car: car)
+        return ARProjection(floor: floor, car: car, goal: goal.flatMap { geo.project($0) })
     }
 
     private func minSide(_ m: ArucoMarker) -> CGFloat {
@@ -309,6 +342,32 @@ final class ARCameraManager: NSObject, ARSessionDelegate {
                 outlineNodes.append(n)
             }
         }
+    }
+
+    private func drawGoal(_ p: simd_float3) {
+        goalNodes.forEach { $0.removeFromParentNode() }
+
+        // Flat green ring on the floor plus a floating label.
+        let ring = SCNTorus(ringRadius: 0.08, pipeRadius: 0.006)
+        ring.firstMaterial?.diffuse.contents = UIColor.systemGreen
+        let ringNode = SCNNode(geometry: ring)
+        ringNode.simdPosition = p + simd_float3(0, 0.005, 0)
+
+        let dot = SCNSphere(radius: 0.02)
+        dot.firstMaterial?.diffuse.contents = UIColor.systemGreen
+        let dotNode = SCNNode(geometry: dot)
+        dotNode.simdPosition = p + simd_float3(0, 0.02, 0)
+
+        let text = SCNText(string: "GOAL", extrusionDepth: 0.5)
+        text.font = .boldSystemFont(ofSize: 5)
+        text.firstMaterial?.diffuse.contents = UIColor.white
+        let label = SCNNode(geometry: text)
+        label.scale = SCNVector3(0.01, 0.01, 0.01)
+        label.simdPosition = p + simd_float3(0, 0.07, 0)
+        label.constraints = [SCNBillboardConstraint()]
+
+        [ringNode, dotNode, label].forEach { sceneView.scene.rootNode.addChildNode($0) }
+        goalNodes = [ringNode, dotNode, label]
     }
 
     private func line(from a: simd_float3, to b: simd_float3) -> SCNNode {

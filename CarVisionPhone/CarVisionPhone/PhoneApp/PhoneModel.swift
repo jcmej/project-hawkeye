@@ -48,7 +48,7 @@ final class VisionPipeline {
         let markers = detector.detect(pixelBuffer: pixelBuffer)
         if arMode {
             if let p = projection {
-                perception.setProjectedCorners(floor: p.floor, car: p.car)
+                perception.setProjectedCorners(floor: p.floor, car: p.car, goal: p.goal)
             } else {
                 perception.pollReset()   // keep the last mapping during brief tracking hiccups
             }
@@ -228,9 +228,20 @@ final class PhoneModel: ObservableObject {
         pipeline.requestBackgroundCapture()
     }
 
-    /// AR mode: tap the floor to pin the next missing corner.
-    func placeCorner(atViewPoint point: CGPoint) {
-        ar?.placeNextCorner(atViewPoint: point)
+    /// AR mode: when true, the next tap on the preview places the goal.
+    /// Opt-in so an accidental touch on a mounted phone can't move the goal.
+    @Published var placingGoal = false
+
+    /// AR mode: pin (or move) the goal to the tapped floor spot.
+    func placeGoal(atViewPoint point: CGPoint) {
+        guard placingGoal, let ar else { return }
+        if ar.placeGoal(atViewPoint: point) { placingGoal = false }
+    }
+
+    /// AR mode: forget the pinned goal. Rescan the goal marker or tap to place a new one.
+    func resetGoal() {
+        placingGoal = false
+        ar?.resetGoal()
     }
 
     // MARK: - Classic-mode zoom

@@ -46,7 +46,7 @@ struct ContentView: View {
                     .ignoresSafeArea()
                     .contentShape(Rectangle())
                     .onTapGesture(coordinateSpace: .local) { point in
-                        if !model.arStatus.complete { model.placeCorner(atViewPoint: point) }
+                        model.placeGoal(atViewPoint: point)   // only acts in "Tap to place goal" mode
                     }
             } else if let camera = model.camera {
                 CameraPreview(session: camera.session, fill: fillScreen)
@@ -127,7 +127,7 @@ struct ContentView: View {
                 Text("Step 1: Point at the floor and move the phone slowly until it's found.")
                     .font(.caption)
             } else if !st.complete {
-                Text("Step 2: Walk to each corner marker and point the phone at it from close up, or tap the floor to place the next corner.")
+                Text("Step 2: Walk to each corner marker and point the phone at it from close up.")
                     .font(.caption)
                 HStack(spacing: 6) {
                     ForEach(MarkerIDs.corners, id: \.self) { id in
@@ -138,6 +138,10 @@ struct ContentView: View {
                 Text("Arena pinned ✓ Step 3: mount the phone. Corners can be off-screen now.")
                     .font(.caption.bold())
                     .foregroundColor(.green)
+            }
+
+            if st.floorFound {
+                goalRow(st)
             }
 
             if let w = st.measuredWidth, let h = st.measuredHeight {
@@ -163,6 +167,31 @@ struct ContentView: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private func goalRow(_ st: ARCalibrationStatus) -> some View {
+        HStack(spacing: 8) {
+            if model.placingGoal {
+                Text("Tap the floor where the goal should go")
+                    .font(.caption.bold()).foregroundColor(.yellow)
+                Spacer()
+                Button("Cancel") { model.placingGoal = false }
+                    .font(.caption.bold())
+            } else {
+                if st.goalPinned {
+                    Text("Goal pinned ✓").font(.caption.bold()).foregroundColor(.green)
+                } else if let n = st.progress[MarkerIDs.goal] {
+                    Text("Goal: scanning \(n * 100 / 12)%").font(.caption.bold()).foregroundColor(.yellow)
+                } else {
+                    Text("Goal: scan the goal marker up close, or")
+                        .font(.caption)
+                }
+                Spacer()
+                Button(st.goalPinned ? "Move goal" : "Tap to place") { model.placingGoal = true }
+                    .font(.caption.bold())
+                    .buttonStyle(.bordered)
+            }
+        }
     }
 
     private func cornerChip(_ id: Int, _ st: ARCalibrationStatus) -> some View {
@@ -219,6 +248,10 @@ struct ContentView: View {
 
             HStack(spacing: 8) {
                 Button(model.arMode ? "Reset corners" : "Recalibrate") { model.recalibrate() }
+                if model.arMode {
+                    Button("Reset goal") { model.resetGoal() }
+                        .disabled(!model.arStatus.goalPinned && !model.placingGoal)
+                }
                 Button(model.debug.hasBackground ? "Recapture BG" : "Capture BG") {
                     model.captureBackground()
                 }
@@ -227,8 +260,9 @@ struct ContentView: View {
                     Button("Map") { showMap = true }
                 }
                 Spacer()
-                Button("Settings") { showSettings = true }
+                Button { showSettings = true } label: { Image(systemName: "gearshape") }
             }
+            .font(.subheadline)
             .buttonStyle(.bordered)
             .tint(.white)
             .padding(8)

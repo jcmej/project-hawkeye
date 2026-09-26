@@ -92,6 +92,8 @@ final class Perception {
     private var homography: Homography?
     /// AR mode only: exact mapping for the plane at the car marker's height.
     private var carHomography: Homography?
+    /// AR mode only: goal pinned in 3D, in arena coordinates. Overrides the live goal marker.
+    private var pinnedGoal: Vec2?
     private var carHistory: [(t: Double, p: Vec2)] = []
     private var seq = 0
 
@@ -171,11 +173,12 @@ final class Perception {
     /// AR mode: calibration comes from corners pinned in 3D and projected into
     /// this frame, so they don't need to be visible. Also builds a second mapping
     /// at the car marker's height, which removes the elevated-marker error.
-    func setProjectedCorners(floor: [CGPoint], car: [CGPoint]) {
+    func setProjectedCorners(floor: [CGPoint], car: [CGPoint], goal: CGPoint?) {
         consumeResetRequest()
         let dst = MarkerIDs.cornerWorldPositions(settings.arena)
         if let h = Homography.fromFourPoints(src: floor, dst: dst) { homography = h }
         carHomography = Homography.fromFourPoints(src: car, dst: dst)
+        pinnedGoal = goal.flatMap { homography?.apply($0) }
         calibrationNote = nil
     }
 
@@ -190,6 +193,7 @@ final class Perception {
         guard reset else { return }
         homography = nil
         carHomography = nil
+        pinnedGoal = nil
         calibratedCorners = nil
         candidateCorners = nil
         candidateCount = 0
@@ -259,7 +263,7 @@ final class Perception {
             }
         }
         held = held.filter { t - $0.value.lastConfirmed <= holdTime }
-        msg.goal = held[MarkerIDs.goal]?.position
+        msg.goal = pinnedGoal ?? held[MarkerIDs.goal]?.position
         msg.obstacles = held
             .filter { MarkerIDs.obstacles.contains($0.key) }
             .map { ObstacleObservation(id: $0.key, position: $0.value.position) }
