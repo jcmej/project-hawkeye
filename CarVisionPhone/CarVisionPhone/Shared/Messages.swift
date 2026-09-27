@@ -110,6 +110,11 @@ struct ObservationMessage: Codable {
     var grid: GridMessage? = nil
     /// Nearest obstacle to the car (LiDAR phones with a learned car shape).
     var clearance: ClearanceMessage? = nil
+    // Optional metadata for the Python hub; older Swift receivers ignore it.
+    var arena: ArenaConfig? = nil
+    var carSource: String? = nil
+    var sessionId: String? = nil
+    var sentAt: Double? = nil
 }
 
 /// Car-frame velocity command, each component in -1...1.

@@ -14,6 +14,7 @@ final class VisionPipeline {
     private var lastDebugPush = 0.0
     private var lastCar: (pose: Pose, t: Double)?
     private var latestTime = 0.0
+    private let sessionId = UUID().uuidString
 
     /// The car's latest pose *from its marker* and its age, if within 0.5 s
     /// (processing queue only). Depth-tracked poses are deliberately excluded:
@@ -92,9 +93,24 @@ final class VisionPipeline {
                                            matrix: m)
         }
 
-        let (msg, frameDebug) = perception.process(markers: markers, rawOccupancy: raw,
+        var (msg, frameDebug) = perception.process(markers: markers, rawOccupancy: raw,
                                                    clearance: clearance, depthCar: depthCar,
+                                                   maskCameraChanges: depthOccupancy == nil,
                                                    time: t, fps: Double(frameTimes.count))
+        msg.arena = perception.settings.arena
+        msg.carSource = frameDebug.carSource
+        msg.sessionId = sessionId
+        msg.sentAt = Date().timeIntervalSince1970
+        if arMode && projection == nil {
+            // A retained homography is useful for display, not safe for motion.
+            msg.calibrated = false
+            msg.car = nil
+            msg.carSource = nil
+            msg.grid = nil
+            msg.veto = true
+            msg.vetoReason = "AR projection unavailable"
+            frameDebug.calibrated = false
+        }
         sender.send(msg)
         if let car = msg.car, frameDebug.carSource == "marker" { lastCar = (car, t) }
 
