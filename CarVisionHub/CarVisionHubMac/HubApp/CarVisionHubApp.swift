@@ -39,6 +39,7 @@ struct HubView: View {
                                    obstacles: model.allObstacles,
                                    path: model.path,
                                    occupied: model.occupiedCenters,
+                                   nearestObstacle: model.world.clearance?.point,
                                    showInflation: true)
             }
             .contentShape(Rectangle())
@@ -71,6 +72,8 @@ struct HubView: View {
                     .tint(.red)
                     .keyboardShortcut(.space, modifiers: [])
             }
+
+            clearanceBox
 
             GroupBox("Car") {
                 VStack(alignment: .leading, spacing: 6) {
@@ -148,6 +151,28 @@ struct HubView: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
+        }
+    }
+
+    private var clearanceBox: some View {
+        let c = model.world.clearance
+        let color: Color = c.map { $0.distance < 8 ? .red : ($0.distance < 20 ? .orange : .green) } ?? .secondary
+        return GroupBox("Nearest obstacle to car") {
+            VStack(alignment: .leading, spacing: 4) {
+                if let c {
+                    Text(String(format: "%.0f cm %@", c.distance, c.bearing))
+                        .font(.title2.bold().monospacedDigit())
+                        .foregroundColor(color)
+                    if let ttc = c.timeToCollision {
+                        Text(String(format: "Contact in %.1f s at current speed", ttc))
+                            .font(.caption).foregroundColor(ttc < 1 ? .red : .secondary)
+                    }
+                } else {
+                    Text("Nothing within 1 m, or no LiDAR phone with a learned car shape")
+                        .font(.caption).foregroundColor(.secondary)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 

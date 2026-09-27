@@ -22,6 +22,7 @@ struct ContentView: View {
     @AppStorage("previewFill") private var fillScreen = true
     @AppStorage("useAR") private var useAR = true
     @AppStorage("carMarkerHeight") private var carMarkerHeight = 10.0   // cm above the floor
+    @AppStorage("useLidar") private var useLidar = true
     @State private var showSettings = false
     @State private var showMap = true
     @State private var pinchBase: CGFloat?
@@ -65,7 +66,7 @@ struct ContentView: View {
         .onAppear {
             UIApplication.shared.isIdleTimerDisabled = true   // keep screen awake
             if cameraId.isEmpty { cameraId = "cam-\(Int.random(in: 100...999))" }
-            model.apply(settings: settings, manualHost: manualHost, carMarkerHeightCm: carMarkerHeight)
+            model.apply(settings: settings, manualHost: manualHost, carMarkerHeightCm: carMarkerHeight, useLidar: useLidar)
             model.start(manualHost: manualHost, zoom: savedZoom > 0 ? CGFloat(savedZoom) : nil)
         }
         .onChange(of: model.zoomFactor) { _, z in savedZoom = Double(z) }
@@ -144,6 +145,20 @@ struct ContentView: View {
                 goalRow(st)
             }
 
+            if model.lidarAvailable && useLidar && st.complete {
+                if let warning = st.depthWarning {
+                    Text(warning).font(.caption2.bold()).foregroundColor(.red)
+                }
+                if let tilt = st.floorTiltDegrees {
+                    let wedge = st.floorFarMinusNearCm.map { String(format: " · far vs near %+.1f cm (corrected)", $0) } ?? ""
+                    Text(String(format: "Floor fit: tilt %.1f°", tilt) + wedge)
+                        .font(.caption2).foregroundColor(.secondary)
+                }
+            }
+            if model.lidarAvailable && useLidar {
+                carShapeRow(st)
+            }
+
             if let w = st.measuredWidth, let h = st.measuredHeight {
                 let off = abs(w - arenaWidth) / arenaWidth > 0.05 || abs(h - arenaHeight) / arenaHeight > 0.05
                 HStack {
@@ -152,7 +167,7 @@ struct ContentView: View {
                         Button("Use") {
                             arenaWidth = (w).rounded()
                             arenaHeight = (h).rounded()
-                            model.apply(settings: settings, manualHost: manualHost, carMarkerHeightCm: carMarkerHeight)
+                            model.apply(settings: settings, manualHost: manualHost, carMarkerHeightCm: carMarkerHeight, useLidar: useLidar)
                             model.settingsChanged()
                         }
                         .font(.caption.bold())
@@ -167,6 +182,75 @@ struct ContentView: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    /// Shown over the mini-map when the arena is calibrated but the car hasn't been
+    /// found (by marker or LiDAR tracking) for over half a second.
+    @ViewBuilder private var carLostWarning: some View {
+        if model.debug.calibrated, let missing = model.debug.carMissingFor, missing > 0.5 {
+            VStack(spacing: 4) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .font(.title3)
+                Text("Car not in view")
+                    .font(.caption.bold())
+                Text("Point the phone at the car")
+                    .font(.caption2)
+            }
+            .foregroundColor(.white)
+            .padding(8)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color.orange.opacity(0.85), in: RoundedRectangle(cornerRadius: 12))
+        }
+    }
+
+    private var clearanceReadout: some View {
+        let c = model.debug.clearance
+        let color: Color = {
+            guard let d = c?.distance else { return .green }
+            return d < 8 ? .red : (d < 20 ? .yellow : .green)
+        }()
+        let text: String = {
+            guard let c else { return "Nearest obstacle: none within 1 m" }
+            var t = String(format: "Nearest: %.0f cm %@", c.distance, c.bearing)
+            if let ttc = c.timeToCollision { t += String(format: " · contact in %.1f s", ttc) }
+            return t
+        }()
+        return Text(text)
+            .font(.headline.monospacedDigit())
+            .padding(.horizontal, 12).padding(.vertical, 6)
+            .frame(maxWidth: .infinity)
+            .background(color.opacity(0.85), in: RoundedRectangle(cornerRadius: 10))
+            .foregroundColor(color == .yellow ? .black : .white)
+    }
+
+    private func carShapeRow(_ st: ARCalibrationStatus) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+        HStack(spacing: 8) {
+            if let n = st.carLearnProgress {
+                Text("Learning car shape \(n * 100 / 30)% — keep it clear, slowly circle it")
+                    .font(.caption.bold()).foregroundColor(.yellow)
+            } else if let p = st.carProfile {
+                Text(String(format: "Car shape ✓ %.0f×%.0f cm, %.0f cm tall", p.length, p.width, p.height))
+                    .font(.caption.bold()).foregroundColor(.green)
+            } else if !st.complete {
+                Text("Car shape: pin the corners first")
+                    .font(.caption).foregroundColor(.secondary)
+            } else {
+                Text("Car shape: not learned (needed for clearance)")
+                    .font(.caption)
+            }
+            Spacer()
+            if st.carLearnProgress == nil {
+                Button(st.carProfile == nil ? "Learn car shape" : "Relearn") { model.learnCarShape() }
+                    .font(.caption.bold())
+                    .buttonStyle(.bordered)
+                    .disabled(!st.complete)
+            }
+        }
+        if let msg = st.carLearnMessage {
+            Text(msg).font(.caption2).foregroundColor(.orange)
+        }
+        }
     }
 
     private func goalRow(_ st: ARCalibrationStatus) -> some View {
@@ -214,6 +298,10 @@ struct ContentView: View {
                 .padding(10)
                 .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
 
+            if model.debug.clearanceActive {
+                clearanceReadout
+            }
+
             if model.arMode {
                 arCalibrationPanel
                     .padding(10)
@@ -236,10 +324,12 @@ struct ContentView: View {
                         let t = ArenaTransform(arena: arena, size: size)
                         ArenaRenderer.draw(&ctx, t, car: model.debug.car, goal: model.debug.goal,
                                            obstacles: model.debug.obstacles,
-                                           occupied: model.debug.occupied)
+                                           occupied: model.debug.occupied,
+                                           nearestObstacle: model.debug.clearance?.point)
                     }
                     .frame(width: 170, height: 130)
                     .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+                    .overlay { carLostWarning }
                     .onTapGesture { showMap = false }
                 }
                 Spacer()
@@ -252,10 +342,14 @@ struct ContentView: View {
                     Button("Reset goal") { model.resetGoal() }
                         .disabled(!model.arStatus.goalPinned && !model.placingGoal)
                 }
-                Button(model.debug.hasBackground ? "Recapture BG" : "Capture BG") {
-                    model.captureBackground()
+                if model.lidarAvailable && useLidar {
+                    Button("Clear obstacles") { model.clearObstacles() }
+                } else {
+                    Button(model.debug.hasBackground ? "Recapture BG" : "Capture BG") {
+                        model.captureBackground()
+                    }
+                    .disabled(!model.debug.calibrated)
                 }
-                .disabled(!model.debug.calibrated)
                 if !showMap {
                     Button("Map") { showMap = true }
                 }
@@ -292,7 +386,13 @@ struct ContentView: View {
                 Text(note).font(.caption.bold()).foregroundColor(.orange)
             }
             Group {
-                if let note = d.backgroundNote {
+                if d.obstacleSource == "LiDAR" {
+                    Text("Obstacle detection: LiDAR · \(d.occupied.count) cells occupied")
+                        .foregroundColor(.green)
+                } else if model.lidarAvailable && useLidar {
+                    Text("Obstacle detection: LiDAR (starts once corners are pinned)")
+                        .foregroundColor(.secondary)
+                } else if let note = d.backgroundNote {
                     Text("Obstacle detection: \(note)").foregroundColor(.orange)
                 } else if d.hasBackground {
                     Text("Obstacle detection: on · \(d.occupied.count) cells occupied")
@@ -307,8 +407,10 @@ struct ContentView: View {
                 .font(.caption).foregroundColor(.secondary)
             if let car = d.car {
                 Text(String(format: "Car (%.0f, %.0f) cm  %.0f°  %.0f cm/s",
-                            car.position.x, car.position.y, car.heading * 180 / .pi, d.carSpeed))
+                            car.position.x, car.position.y, car.heading * 180 / .pi, d.carSpeed)
+                     + (d.carSource == "LiDAR" ? " · tracked by LiDAR" : ""))
                     .font(.caption.monospaced())
+                    .foregroundColor(d.carSource == "LiDAR" ? .cyan : .primary)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -322,6 +424,9 @@ struct ContentView: View {
                 Section {
                     TextField("Camera ID", text: $cameraId)
                     Toggle("AR calibration", isOn: $useAR)
+                    if model.lidarAvailable {
+                        Toggle("Use LiDAR for obstacles", isOn: $useLidar)
+                    }
                     if model.arMode {
                         numberField("Car marker height (cm)", $carMarkerHeight)
                     } else {
@@ -353,7 +458,7 @@ struct ContentView: View {
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Apply") {
-                        model.apply(settings: settings, manualHost: manualHost, carMarkerHeightCm: carMarkerHeight)
+                        model.apply(settings: settings, manualHost: manualHost, carMarkerHeightCm: carMarkerHeight, useLidar: useLidar)
                         model.settingsChanged()
                         showSettings = false
                     }

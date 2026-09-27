@@ -36,15 +36,17 @@ enum ArenaRenderer {
                      obstacles: [Vec2],
                      path: [Vec2] = [],
                      occupied: [Vec2] = [],
+                     nearestObstacle: Vec2? = nil,
                      showInflation: Bool = false) {
         let a = t.arena
 
         // Markerless occupancy cells (drawn first, underneath everything)
-        let half = t.length(GridSpec.cellSize / 2)
+        // At least 4 pt wide so single cells stay visible on the phone's small mini-map.
+        let half = max(t.length(GridSpec.cellSize / 2), 2)
         for c in occupied {
             let p = t.toView(c)
             ctx.fill(Path(CGRect(x: p.x - half, y: p.y - half, width: 2 * half, height: 2 * half)),
-                     with: .color(.red.opacity(0.35)))
+                     with: .color(.red.opacity(0.8)))
         }
 
         // Arena outline
@@ -81,6 +83,16 @@ enum ArenaRenderer {
             let c = t.toView(g)
             ctx.fill(circle(c, t.length(5)), with: .color(.green))
             ctx.stroke(circle(c, t.length(9)), with: .color(.green), lineWidth: 2)
+        }
+
+        // Line from the car to its nearest obstacle
+        if let n = nearestObstacle, let c = car ?? ghostCar {
+            var line = Path()
+            line.move(to: t.toView(c.position))
+            line.addLine(to: t.toView(n))
+            ctx.stroke(line, with: .color(.red), style: StrokeStyle(lineWidth: 2, dash: [4, 3]))
+            let p = t.toView(n)
+            ctx.fill(Path(ellipseIn: CGRect(x: p.x - 4, y: p.y - 4, width: 8, height: 8)), with: .color(.red))
         }
 
         // Vision-estimated car (shown as a dashed ghost when the mock car is driving)

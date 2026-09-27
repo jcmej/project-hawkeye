@@ -12,6 +12,16 @@ final class VisionPipeline {
 
     private var frameTimes: [Double] = []
     private var lastDebugPush = 0.0
+    private var lastCar: (pose: Pose, t: Double)?
+    private var latestTime = 0.0
+
+    /// The car's latest pose *from its marker* and its age, if within 0.5 s
+    /// (processing queue only). Depth-tracked poses are deliberately excluded:
+    /// the tracker must only be re-anchored by real marker readings.
+    var lastMarkerCarPose: (pose: Pose, age: Double)? {
+        guard let c = lastCar, latestTime - c.t < 0.5 else { return nil }
+        return (c.pose, latestTime - c.t)
+    }
     private var captureCountdown = -1
     private var backgroundNote: String?
 
@@ -38,10 +48,18 @@ final class VisionPipeline {
     /// - Parameters:
     ///   - arMode: calibration comes only from `projection` (never from visible corner markers).
     ///   - projection: AR-pinned corners projected into this frame, if available.
+    ///   - depthOccupancy: LiDAR obstacle map; used instead of background subtraction when present.
+    ///   - allowCameraBackground: false in LiDAR mode. Background subtraction assumes a
+    ///     still phone, so it must never kick in for a handheld LiDAR phone.
     /// - Returns: the markers detected in this frame.
     @discardableResult
     func handle(pixelBuffer: CVPixelBuffer, time t: Double,
-                arMode: Bool, projection: ARProjection?) -> [ArucoMarker] {
+                arMode: Bool, projection: ARProjection?,
+                depthOccupancy: Data? = nil,
+                clearance: ClearanceInfo? = nil,
+                depthCar: Pose? = nil,
+                allowCameraBackground: Bool = true) -> [ArucoMarker] {
+        latestTime = t
         frameTimes.append(t)
         frameTimes.removeAll { t - $0 > 1.0 }
 
@@ -59,7 +77,12 @@ final class VisionPipeline {
         handleBackgroundRequests(pixelBuffer)
 
         var raw: Data?
-        if changeDetector.hasBackground {
+        var source: String?
+        if let depthOccupancy {
+            raw = depthOccupancy
+            source = "LiDAR"
+        } else if allowCameraBackground && changeDetector.hasBackground {
+            source = "camera"
             let s = perception.settings
             // In AR mode, re-warp with the current mapping so small phone movements don't break it.
             let m = arMode ? perception.topDownMatrix()?.map { NSNumber(value: $0) } : nil
@@ -70,13 +93,16 @@ final class VisionPipeline {
         }
 
         let (msg, frameDebug) = perception.process(markers: markers, rawOccupancy: raw,
+                                                   clearance: clearance, depthCar: depthCar,
                                                    time: t, fps: Double(frameTimes.count))
         sender.send(msg)
+        if let car = msg.car, frameDebug.carSource == "marker" { lastCar = (car, t) }
 
         if t - lastDebugPush > 0.1 {
             lastDebugPush = t
             var dbg = frameDebug
             dbg.hasBackground = changeDetector.hasBackground
+            dbg.obstacleSource = source
             dbg.backgroundNote = backgroundNote
             onDebug?(dbg)
         }
@@ -136,6 +162,8 @@ final class PhoneModel: ObservableObject {
     @Published var zoomInfo = ZoomInfo()
 
     let arMode: Bool
+    /// LiDAR obstacle detection is possible (AR mode on a Pro iPhone).
+    let lidarAvailable: Bool
     let camera: CameraManager?
     let ar: ARCameraManager?
     let pipeline: VisionPipeline
@@ -147,15 +175,21 @@ final class PhoneModel: ObservableObject {
     init() {
         let wantsAR = UserDefaults.standard.object(forKey: "useAR") as? Bool ?? true
         arMode = wantsAR && ARWorldTrackingConfiguration.isSupported
+        lidarAvailable = arMode && ARCameraManager.lidarAvailable
 
         pipeline = VisionPipeline(settings: .init(cameraId: "cam", arena: ArenaConfig()))
         let p = pipeline
 
         if arMode {
             let a = ARCameraManager()
-            a.onFrame = { pb, t, projection in
-                p.handle(pixelBuffer: pb, time: t, arMode: true, projection: projection)
+            a.onFrame = { [weak a] pb, t, projection, depth in
+                let lidarMode = ARCameraManager.lidarAvailable && (a?.useDepth ?? false)
+                return p.handle(pixelBuffer: pb, time: t, arMode: true, projection: projection,
+                                depthOccupancy: depth.occupancy, clearance: depth.clearance,
+                                depthCar: depth.depthTrackedCar,
+                                allowCameraBackground: !lidarMode)
             }
+            a.carPose = { p.lastMarkerCarPose }
             ar = a
             camera = nil
         } else {
@@ -202,9 +236,12 @@ final class PhoneModel: ObservableObject {
         pipeline.sender.restart(manualHost: manualHost)
     }
 
-    func apply(settings: Perception.Settings, manualHost: String, carMarkerHeightCm: Double) {
+    func apply(settings: Perception.Settings, manualHost: String, carMarkerHeightCm: Double,
+               useLidar: Bool = true) {
         pipeline.perception.settings = settings
         ar?.carMarkerHeight = Float(carMarkerHeightCm / 100)
+        ar?.arena = settings.arena
+        ar?.useDepth = useLidar
         if started { pipeline.sender.restart(manualHost: manualHost) }
     }
 
@@ -226,6 +263,16 @@ final class PhoneModel: ObservableObject {
     func captureBackground() {
         setCameraLocked(true)
         pipeline.requestBackgroundCapture()
+    }
+
+    /// LiDAR mode: measure the car's outline (keep it clear; slowly circle it).
+    func learnCarShape() {
+        ar?.startLearningCarShape()
+    }
+
+    /// LiDAR mode: forget all mapped obstacles (e.g. after rearranging the arena).
+    func clearObstacles() {
+        ar?.clearObstacleMap()
     }
 
     /// AR mode: when true, the next tap on the preview places the goal.

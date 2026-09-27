@@ -53,6 +53,15 @@ struct PhoneDebugState {
     var occupied: [Vec2] = []
     var hasBackground = false
     var backgroundNote: String?
+    /// "LiDAR", "camera", or nil when no obstacle detection is running.
+    var obstacleSource: String?
+    /// Where this frame's car pose came from: "marker", "LiDAR" (depth tracking), or nil.
+    var carSource: String?
+    /// Seconds since the car was last found (nil while it's found). For the "car lost" warning.
+    var carMissingFor: Double?
+    /// Clearance readout: nil = not measuring (no car shape or car not seen).
+    var clearanceActive = false
+    var clearance: ClearanceMessage?
     var calibrationNote: String?
     var carSpeed: Double = 0
     var veto = false
@@ -77,6 +86,10 @@ final class Perception {
         var carMaskPadding: Double = 8
         /// Radius around the goal marker ignored by change detection.
         var goalMaskRadius: Double = 15
+        /// Stop if an obstacle is closer than this (cm) to the car's outline and the car is closing in.
+        var clearanceStop: Double = 4
+        /// Stop if contact is predicted within this many seconds.
+        var timeToCollisionStop: Double = 0.6
     }
 
     private let lock = NSLock()
@@ -96,6 +109,7 @@ final class Perception {
     private var pinnedGoal: Vec2?
     private var carHistory: [(t: Double, p: Vec2)] = []
     private var seq = 0
+    private var lastCarSeen: Double?
 
     // Calibration guard: corner pixel positions must be stable before the first
     // calibration, and must stay near the calibrated ones afterwards.
@@ -224,7 +238,8 @@ final class Perception {
     }
 
     /// Step 2 each frame: build the observation from markers and (optional) raw occupancy.
-    func process(markers: [ArucoMarker], rawOccupancy: Data?, time t: Double, fps: Double)
+    func process(markers: [ArucoMarker], rawOccupancy: Data?, clearance: ClearanceInfo? = nil,
+                 depthCar: Pose? = nil, time t: Double, fps: Double)
         -> (ObservationMessage, PhoneDebugState) {
         let s = settings
 
@@ -251,8 +266,17 @@ final class Perception {
             msg.car = pose
             msg.carConfidence = confidence(of: m)
             carHistory.append((t: t, p: pose.position))
+            dbg.carSource = "marker"
+        } else if let depthCar {
+            // Marker unreadable, but the learned outline was found in the depth data.
+            msg.car = depthCar
+            msg.carConfidence = 0.3                  // less trusted than a marker reading
+            carHistory.append((t: t, p: depthCar.position))
+            dbg.carSource = "LiDAR"
         }
         carHistory.removeAll { t - $0.t > 0.5 }
+        if msg.car != nil { lastCarSeen = t }
+        dbg.carMissingFor = msg.car != nil ? nil : t - (lastCarSeen ?? t - 999)
 
         // Goal and obstacles: confirmed after 3 hits, then held briefly through dropouts.
         let stationaryIds = [MarkerIDs.goal] + Array(MarkerIDs.obstacles)
@@ -309,6 +333,37 @@ final class Perception {
                                            occupied: occupiedCenters, settings: s) {
                 msg.veto = true
                 msg.vetoReason = reason
+            }
+        }
+
+        // Clearance from the car's learned outline (LiDAR): readout, time to collision, veto.
+        if let clearance, let car = msg.car ?? carHistory.last.map({ Pose(position: $0.p, heading: 0) }) {
+            dbg.clearanceActive = true
+            if let dist = clearance.distance, let point = clearance.point, let bearing = clearance.bearingDegrees {
+                let v = velocity()
+                var ttc: Double?
+                for n in clearance.nearby {
+                    let closing = v.dot((n.point - car.position).normalized)
+                    if closing > 2 {                                 // cm/s toward it
+                        let t = n.distance / closing
+                        ttc = min(ttc ?? t, t)
+                    }
+                }
+                let label = ClearanceMessage.bearingLabel(bearing)
+                let info = ClearanceMessage(distance: dist, bearing: label, point: point, timeToCollision: ttc)
+                msg.clearance = info
+                dbg.clearance = info
+
+                if !msg.veto {
+                    let closingNearest = v.dot((point - car.position).normalized)
+                    if dist < s.clearanceStop && closingNearest > 2 {
+                        msg.veto = true
+                        msg.vetoReason = String(format: "Obstacle %.0f cm %@", dist, label)
+                    } else if let ttc, ttc < s.timeToCollisionStop {
+                        msg.veto = true
+                        msg.vetoReason = String(format: "Contact in %.1f s (%@)", ttc, label)
+                    }
+                }
             }
         }
 

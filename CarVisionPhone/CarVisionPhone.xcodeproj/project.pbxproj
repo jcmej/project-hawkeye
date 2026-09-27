@@ -7,22 +7,22 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		D910681F30685F7900A68927 /* ARCameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D910681E30685F7900A68927 /* ARCameraManager.swift */; };
 		D91936753067E6700078D172 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D91936743067E6700078D172 /* Assets.xcassets */; };
 		D91936783067E6700078D172 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D91936773067E6700078D172 /* Preview Assets.xcassets */; };
 		D91936823067E6700078D172 /* CarVisionPhoneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91936813067E6700078D172 /* CarVisionPhoneTests.swift */; };
 		D919368C3067E6700078D172 /* CarVisionPhoneUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D919368B3067E6700078D172 /* CarVisionPhoneUITests.swift */; };
 		D919368E3067E6700078D172 /* CarVisionPhoneUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D919368D3067E6700078D172 /* CarVisionPhoneUITestsLaunchTests.swift */; };
-		D91936A73067E74B0078D172 /* ArenaRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D919369A3067E74B0078D172 /* ArenaRenderer.swift */; };
-		D91936A83067E74B0078D172 /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = D919369B3067E74B0078D172 /* Geometry.swift */; };
-		D91936A93067E74B0078D172 /* Messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = D919369C3067E74B0078D172 /* Messages.swift */; };
-		D91936AA3067E74B0078D172 /* ArucoBridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = D919369F3067E74B0078D172 /* ArucoBridge.mm */; };
-		D91936AB3067E74B0078D172 /* CameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91936A03067E74B0078D172 /* CameraManager.swift */; };
-		D91936AC3067E74B0078D172 /* CarVisionPhoneApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91936A23067E74B0078D172 /* CarVisionPhoneApp.swift */; };
-		D91936AD3067E74B0078D172 /* ObservationSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91936A33067E74B0078D172 /* ObservationSender.swift */; };
-		D91936AE3067E74B0078D172 /* Perception.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91936A43067E74B0078D172 /* Perception.swift */; };
-		D91936AF3067E74B0078D172 /* PhoneModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91936A53067E74B0078D172 /* PhoneModel.swift */; };
 		D928AAD23067EEC8006E7F53 /* opencv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D928AAD13067EEC8006E7F53 /* opencv2.framework */; };
+		D98BF7433068B42F00A96B51 /* Perception.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98BF73C3068B42F00A96B51 /* Perception.swift */; };
+		D98BF7443068B42F00A96B51 /* Messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98BF7413068B42F00A96B51 /* Messages.swift */; };
+		D98BF7453068B42F00A96B51 /* PhoneModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98BF73D3068B42F00A96B51 /* PhoneModel.swift */; };
+		D98BF7463068B42F00A96B51 /* ObservationSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98BF73B3068B42F00A96B51 /* ObservationSender.swift */; };
+		D98BF7473068B42F00A96B51 /* CarVisionPhoneApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98BF73A3068B42F00A96B51 /* CarVisionPhoneApp.swift */; };
+		D98BF7483068B42F00A96B51 /* ArucoBridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = D98BF7373068B42F00A96B51 /* ArucoBridge.mm */; };
+		D98BF7493068B42F00A96B51 /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98BF7403068B42F00A96B51 /* Geometry.swift */; };
+		D98BF74A3068B42F00A96B51 /* ARCameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98BF7353068B42F00A96B51 /* ARCameraManager.swift */; };
+		D98BF74B3068B42F00A96B51 /* CameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98BF7383068B42F00A96B51 /* CameraManager.swift */; };
+		D98BF74C3068B42F00A96B51 /* ArenaRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98BF73F3068B42F00A96B51 /* ArenaRenderer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -43,7 +43,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		D910681E30685F7900A68927 /* ARCameraManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARCameraManager.swift; sourceTree = "<group>"; };
 		D919366D3067E66F0078D172 /* CarVisionPhone.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CarVisionPhone.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D91936743067E6700078D172 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D91936773067E6700078D172 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
@@ -52,19 +51,20 @@
 		D91936873067E6700078D172 /* CarVisionPhoneUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CarVisionPhoneUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D919368B3067E6700078D172 /* CarVisionPhoneUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarVisionPhoneUITests.swift; sourceTree = "<group>"; };
 		D919368D3067E6700078D172 /* CarVisionPhoneUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarVisionPhoneUITestsLaunchTests.swift; sourceTree = "<group>"; };
-		D919369A3067E74B0078D172 /* ArenaRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArenaRenderer.swift; sourceTree = "<group>"; };
-		D919369B3067E74B0078D172 /* Geometry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Geometry.swift; sourceTree = "<group>"; };
-		D919369C3067E74B0078D172 /* Messages.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Messages.swift; sourceTree = "<group>"; };
-		D919369E3067E74B0078D172 /* ArucoBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArucoBridge.h; sourceTree = "<group>"; };
-		D919369F3067E74B0078D172 /* ArucoBridge.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ArucoBridge.mm; sourceTree = "<group>"; };
-		D91936A03067E74B0078D172 /* CameraManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraManager.swift; sourceTree = "<group>"; };
-		D91936A13067E74B0078D172 /* CarVisionPhone-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CarVisionPhone-Bridging-Header.h"; sourceTree = "<group>"; };
-		D91936A23067E74B0078D172 /* CarVisionPhoneApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CarVisionPhoneApp.swift; sourceTree = "<group>"; };
-		D91936A33067E74B0078D172 /* ObservationSender.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObservationSender.swift; sourceTree = "<group>"; };
-		D91936A43067E74B0078D172 /* Perception.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Perception.swift; sourceTree = "<group>"; };
-		D91936A53067E74B0078D172 /* PhoneModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhoneModel.swift; sourceTree = "<group>"; };
 		D928AACD3067EC40006E7F53 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		D928AAD13067EEC8006E7F53 /* opencv2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = opencv2.framework; sourceTree = "<group>"; };
+		D98BF7353068B42F00A96B51 /* ARCameraManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARCameraManager.swift; sourceTree = "<group>"; };
+		D98BF7363068B42F00A96B51 /* ArucoBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ArucoBridge.h; sourceTree = "<group>"; };
+		D98BF7373068B42F00A96B51 /* ArucoBridge.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ArucoBridge.mm; sourceTree = "<group>"; };
+		D98BF7383068B42F00A96B51 /* CameraManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraManager.swift; sourceTree = "<group>"; };
+		D98BF7393068B42F00A96B51 /* CarVisionPhone-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CarVisionPhone-Bridging-Header.h"; sourceTree = "<group>"; };
+		D98BF73A3068B42F00A96B51 /* CarVisionPhoneApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarVisionPhoneApp.swift; sourceTree = "<group>"; };
+		D98BF73B3068B42F00A96B51 /* ObservationSender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservationSender.swift; sourceTree = "<group>"; };
+		D98BF73C3068B42F00A96B51 /* Perception.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Perception.swift; sourceTree = "<group>"; };
+		D98BF73D3068B42F00A96B51 /* PhoneModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneModel.swift; sourceTree = "<group>"; };
+		D98BF73F3068B42F00A96B51 /* ArenaRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArenaRenderer.swift; sourceTree = "<group>"; };
+		D98BF7403068B42F00A96B51 /* Geometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Geometry.swift; sourceTree = "<group>"; };
+		D98BF7413068B42F00A96B51 /* Messages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Messages.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -116,10 +116,10 @@
 		D919366F3067E66F0078D172 /* CarVisionPhone */ = {
 			isa = PBXGroup;
 			children = (
+				D98BF73E3068B42F00A96B51 /* PhoneApp */,
+				D98BF7423068B42F00A96B51 /* Shared */,
 				D928AACD3067EC40006E7F53 /* Info.plist */,
 				D928AAD13067EEC8006E7F53 /* opencv2.framework */,
-				D91936A63067E74B0078D172 /* PhoneApp */,
-				D919369D3067E74B0078D172 /* Shared */,
 				D91936743067E6700078D172 /* Assets.xcassets */,
 				D91936763067E6700078D172 /* Preview Content */,
 			);
@@ -151,30 +151,30 @@
 			path = CarVisionPhoneUITests;
 			sourceTree = "<group>";
 		};
-		D919369D3067E74B0078D172 /* Shared */ = {
+		D98BF73E3068B42F00A96B51 /* PhoneApp */ = {
 			isa = PBXGroup;
 			children = (
-				D919369A3067E74B0078D172 /* ArenaRenderer.swift */,
-				D919369B3067E74B0078D172 /* Geometry.swift */,
-				D919369C3067E74B0078D172 /* Messages.swift */,
-			);
-			path = Shared;
-			sourceTree = "<group>";
-		};
-		D91936A63067E74B0078D172 /* PhoneApp */ = {
-			isa = PBXGroup;
-			children = (
-				D919369E3067E74B0078D172 /* ArucoBridge.h */,
-				D919369F3067E74B0078D172 /* ArucoBridge.mm */,
-				D91936A03067E74B0078D172 /* CameraManager.swift */,
-				D910681E30685F7900A68927 /* ARCameraManager.swift */,
-				D91936A13067E74B0078D172 /* CarVisionPhone-Bridging-Header.h */,
-				D91936A23067E74B0078D172 /* CarVisionPhoneApp.swift */,
-				D91936A33067E74B0078D172 /* ObservationSender.swift */,
-				D91936A43067E74B0078D172 /* Perception.swift */,
-				D91936A53067E74B0078D172 /* PhoneModel.swift */,
+				D98BF7353068B42F00A96B51 /* ARCameraManager.swift */,
+				D98BF7363068B42F00A96B51 /* ArucoBridge.h */,
+				D98BF7373068B42F00A96B51 /* ArucoBridge.mm */,
+				D98BF7383068B42F00A96B51 /* CameraManager.swift */,
+				D98BF7393068B42F00A96B51 /* CarVisionPhone-Bridging-Header.h */,
+				D98BF73A3068B42F00A96B51 /* CarVisionPhoneApp.swift */,
+				D98BF73B3068B42F00A96B51 /* ObservationSender.swift */,
+				D98BF73C3068B42F00A96B51 /* Perception.swift */,
+				D98BF73D3068B42F00A96B51 /* PhoneModel.swift */,
 			);
 			path = PhoneApp;
+			sourceTree = "<group>";
+		};
+		D98BF7423068B42F00A96B51 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				D98BF73F3068B42F00A96B51 /* ArenaRenderer.swift */,
+				D98BF7403068B42F00A96B51 /* Geometry.swift */,
+				D98BF7413068B42F00A96B51 /* Messages.swift */,
+			);
+			path = Shared;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -307,16 +307,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D91936A73067E74B0078D172 /* ArenaRenderer.swift in Sources */,
-				D91936AC3067E74B0078D172 /* CarVisionPhoneApp.swift in Sources */,
-				D91936AA3067E74B0078D172 /* ArucoBridge.mm in Sources */,
-				D91936A93067E74B0078D172 /* Messages.swift in Sources */,
-				D91936AE3067E74B0078D172 /* Perception.swift in Sources */,
-				D910681F30685F7900A68927 /* ARCameraManager.swift in Sources */,
-				D91936A83067E74B0078D172 /* Geometry.swift in Sources */,
-				D91936AB3067E74B0078D172 /* CameraManager.swift in Sources */,
-				D91936AD3067E74B0078D172 /* ObservationSender.swift in Sources */,
-				D91936AF3067E74B0078D172 /* PhoneModel.swift in Sources */,
+				D98BF7433068B42F00A96B51 /* Perception.swift in Sources */,
+				D98BF7443068B42F00A96B51 /* Messages.swift in Sources */,
+				D98BF7453068B42F00A96B51 /* PhoneModel.swift in Sources */,
+				D98BF7463068B42F00A96B51 /* ObservationSender.swift in Sources */,
+				D98BF7473068B42F00A96B51 /* CarVisionPhoneApp.swift in Sources */,
+				D98BF7483068B42F00A96B51 /* ArucoBridge.mm in Sources */,
+				D98BF7493068B42F00A96B51 /* Geometry.swift in Sources */,
+				D98BF74A3068B42F00A96B51 /* ARCameraManager.swift in Sources */,
+				D98BF74B3068B42F00A96B51 /* CameraManager.swift in Sources */,
+				D98BF74C3068B42F00A96B51 /* ArenaRenderer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -549,7 +549,6 @@
 		D91936953067E6700078D172 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -569,7 +568,6 @@
 		D91936963067E6700078D172 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -589,7 +587,6 @@
 		D91936983067E6700078D172 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = YD6F6J96Q6;
@@ -607,7 +604,6 @@
 		D91936993067E6700078D172 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = YD6F6J96Q6;

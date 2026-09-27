@@ -12,16 +12,16 @@
 		D928AAED3067F136006E7F53 /* CarVisionHubMacTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D928AAEC3067F136006E7F53 /* CarVisionHubMacTests.swift */; };
 		D928AAF73067F136006E7F53 /* CarVisionHubMacUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D928AAF63067F136006E7F53 /* CarVisionHubMacUITests.swift */; };
 		D928AAF93067F136006E7F53 /* CarVisionHubMacUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D928AAF83067F136006E7F53 /* CarVisionHubMacUITestsLaunchTests.swift */; };
-		D928AB033067F1A8006E7F53 /* CarLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = D928AABB3067EB26006E7F53 /* CarLink.swift */; };
-		D928AB043067F1AF006E7F53 /* CarVisionHubApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D928AABC3067EB26006E7F53 /* CarVisionHubApp.swift */; };
-		D928AB053067F1B3006E7F53 /* Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = D928AABD3067EB26006E7F53 /* Controller.swift */; };
-		D928AB063067F1BD006E7F53 /* Fusion.swift in Sources */ = {isa = PBXBuildFile; fileRef = D928AABE3067EB26006E7F53 /* Fusion.swift */; };
-		D928AB073067F1C1006E7F53 /* HubModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D928AABF3067EB26006E7F53 /* HubModel.swift */; };
-		D928AB083067F1C5006E7F53 /* ObservationReceiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D928AAC03067EB26006E7F53 /* ObservationReceiver.swift */; };
-		D928AB093067F1C9006E7F53 /* Planner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D928AAC13067EB26006E7F53 /* Planner.swift */; };
-		D928AB0A3067F1E0006E7F53 /* ArenaRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D928AAB73067EB26006E7F53 /* ArenaRenderer.swift */; };
-		D928AB0B3067F1E4006E7F53 /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = D928AAB83067EB26006E7F53 /* Geometry.swift */; };
-		D928AB0C3067F1E8006E7F53 /* Messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = D928AAB93067EB26006E7F53 /* Messages.swift */; };
+		D98BF7133068B09300A96B51 /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98BF7103068B09300A96B51 /* Geometry.swift */; };
+		D98BF7143068B09300A96B51 /* Fusion.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98BF70A3068B09300A96B51 /* Fusion.swift */; };
+		D98BF7153068B09300A96B51 /* HubModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98BF70B3068B09300A96B51 /* HubModel.swift */; };
+		D98BF7163068B09300A96B51 /* ArenaRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98BF70F3068B09300A96B51 /* ArenaRenderer.swift */; };
+		D98BF7173068B09300A96B51 /* CarVisionHubApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98BF7083068B09300A96B51 /* CarVisionHubApp.swift */; };
+		D98BF7183068B09300A96B51 /* Messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98BF7113068B09300A96B51 /* Messages.swift */; };
+		D98BF7193068B09300A96B51 /* Planner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98BF70D3068B09300A96B51 /* Planner.swift */; };
+		D98BF71A3068B09300A96B51 /* CarLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98BF7073068B09300A96B51 /* CarLink.swift */; };
+		D98BF71B3068B09300A96B51 /* ObservationReceiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98BF70C3068B09300A96B51 /* ObservationReceiver.swift */; };
+		D98BF71C3068B09300A96B51 /* Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98BF7093068B09300A96B51 /* Controller.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,16 +59,6 @@
 		D928AA8A3067EAD4006E7F53 /* CarVisionHub.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CarVisionHub.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D928AA9A3067EAD5006E7F53 /* CarVisionHubTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CarVisionHubTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D928AAA43067EAD5006E7F53 /* CarVisionHubUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CarVisionHubUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		D928AAB73067EB26006E7F53 /* ArenaRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArenaRenderer.swift; sourceTree = "<group>"; };
-		D928AAB83067EB26006E7F53 /* Geometry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Geometry.swift; sourceTree = "<group>"; };
-		D928AAB93067EB26006E7F53 /* Messages.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Messages.swift; sourceTree = "<group>"; };
-		D928AABB3067EB26006E7F53 /* CarLink.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CarLink.swift; sourceTree = "<group>"; };
-		D928AABC3067EB26006E7F53 /* CarVisionHubApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CarVisionHubApp.swift; sourceTree = "<group>"; };
-		D928AABD3067EB26006E7F53 /* Controller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Controller.swift; sourceTree = "<group>"; };
-		D928AABE3067EB26006E7F53 /* Fusion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Fusion.swift; sourceTree = "<group>"; };
-		D928AABF3067EB26006E7F53 /* HubModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HubModel.swift; sourceTree = "<group>"; };
-		D928AAC03067EB26006E7F53 /* ObservationReceiver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObservationReceiver.swift; sourceTree = "<group>"; };
-		D928AAC13067EB26006E7F53 /* Planner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Planner.swift; sourceTree = "<group>"; };
 		D928AAD83067F135006E7F53 /* CarVisionHubMac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CarVisionHubMac.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D928AADE3067F136006E7F53 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D928AAE13067F136006E7F53 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
@@ -79,6 +69,16 @@
 		D928AAF63067F136006E7F53 /* CarVisionHubMacUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarVisionHubMacUITests.swift; sourceTree = "<group>"; };
 		D928AAF83067F136006E7F53 /* CarVisionHubMacUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarVisionHubMacUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		D928AB0D3067F2BB006E7F53 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		D98BF7073068B09300A96B51 /* CarLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarLink.swift; sourceTree = "<group>"; };
+		D98BF7083068B09300A96B51 /* CarVisionHubApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarVisionHubApp.swift; sourceTree = "<group>"; };
+		D98BF7093068B09300A96B51 /* Controller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Controller.swift; sourceTree = "<group>"; };
+		D98BF70A3068B09300A96B51 /* Fusion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fusion.swift; sourceTree = "<group>"; };
+		D98BF70B3068B09300A96B51 /* HubModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HubModel.swift; sourceTree = "<group>"; };
+		D98BF70C3068B09300A96B51 /* ObservationReceiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservationReceiver.swift; sourceTree = "<group>"; };
+		D98BF70D3068B09300A96B51 /* Planner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Planner.swift; sourceTree = "<group>"; };
+		D98BF70F3068B09300A96B51 /* ArenaRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArenaRenderer.swift; sourceTree = "<group>"; };
+		D98BF7103068B09300A96B51 /* Geometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Geometry.swift; sourceTree = "<group>"; };
+		D98BF7113068B09300A96B51 /* Messages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Messages.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -150,37 +150,13 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		D928AABA3067EB26006E7F53 /* Shared */ = {
-			isa = PBXGroup;
-			children = (
-				D928AAB73067EB26006E7F53 /* ArenaRenderer.swift */,
-				D928AAB83067EB26006E7F53 /* Geometry.swift */,
-				D928AAB93067EB26006E7F53 /* Messages.swift */,
-			);
-			path = Shared;
-			sourceTree = "<group>";
-		};
-		D928AAC23067EB26006E7F53 /* HubApp */ = {
-			isa = PBXGroup;
-			children = (
-				D928AABB3067EB26006E7F53 /* CarLink.swift */,
-				D928AABC3067EB26006E7F53 /* CarVisionHubApp.swift */,
-				D928AABD3067EB26006E7F53 /* Controller.swift */,
-				D928AABE3067EB26006E7F53 /* Fusion.swift */,
-				D928AABF3067EB26006E7F53 /* HubModel.swift */,
-				D928AAC03067EB26006E7F53 /* ObservationReceiver.swift */,
-				D928AAC13067EB26006E7F53 /* Planner.swift */,
-			);
-			path = HubApp;
-			sourceTree = "<group>";
-		};
 		D928AAD93067F135006E7F53 /* CarVisionHubMac */ = {
 			isa = PBXGroup;
 			children = (
 				D928AB0D3067F2BB006E7F53 /* Info.plist */,
+				D98BF70E3068B09300A96B51 /* HubApp */,
+				D98BF7123068B09300A96B51 /* Shared */,
 				D928AADE3067F136006E7F53 /* Assets.xcassets */,
-				D928AAC23067EB26006E7F53 /* HubApp */,
-				D928AABA3067EB26006E7F53 /* Shared */,
 				D928AAE33067F136006E7F53 /* CarVisionHubMac.entitlements */,
 				D928AAE03067F136006E7F53 /* Preview Content */,
 			);
@@ -210,6 +186,30 @@
 				D928AAF83067F136006E7F53 /* CarVisionHubMacUITestsLaunchTests.swift */,
 			);
 			path = CarVisionHubMacUITests;
+			sourceTree = "<group>";
+		};
+		D98BF70E3068B09300A96B51 /* HubApp */ = {
+			isa = PBXGroup;
+			children = (
+				D98BF7073068B09300A96B51 /* CarLink.swift */,
+				D98BF7083068B09300A96B51 /* CarVisionHubApp.swift */,
+				D98BF7093068B09300A96B51 /* Controller.swift */,
+				D98BF70A3068B09300A96B51 /* Fusion.swift */,
+				D98BF70B3068B09300A96B51 /* HubModel.swift */,
+				D98BF70C3068B09300A96B51 /* ObservationReceiver.swift */,
+				D98BF70D3068B09300A96B51 /* Planner.swift */,
+			);
+			path = HubApp;
+			sourceTree = "<group>";
+		};
+		D98BF7123068B09300A96B51 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				D98BF70F3068B09300A96B51 /* ArenaRenderer.swift */,
+				D98BF7103068B09300A96B51 /* Geometry.swift */,
+				D98BF7113068B09300A96B51 /* Messages.swift */,
+			);
+			path = Shared;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -451,16 +451,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D928AB093067F1C9006E7F53 /* Planner.swift in Sources */,
-				D928AB053067F1B3006E7F53 /* Controller.swift in Sources */,
-				D928AB083067F1C5006E7F53 /* ObservationReceiver.swift in Sources */,
-				D928AB043067F1AF006E7F53 /* CarVisionHubApp.swift in Sources */,
-				D928AB0A3067F1E0006E7F53 /* ArenaRenderer.swift in Sources */,
-				D928AB033067F1A8006E7F53 /* CarLink.swift in Sources */,
-				D928AB063067F1BD006E7F53 /* Fusion.swift in Sources */,
-				D928AB0C3067F1E8006E7F53 /* Messages.swift in Sources */,
-				D928AB0B3067F1E4006E7F53 /* Geometry.swift in Sources */,
-				D928AB073067F1C1006E7F53 /* HubModel.swift in Sources */,
+				D98BF7133068B09300A96B51 /* Geometry.swift in Sources */,
+				D98BF7143068B09300A96B51 /* Fusion.swift in Sources */,
+				D98BF7153068B09300A96B51 /* HubModel.swift in Sources */,
+				D98BF7163068B09300A96B51 /* ArenaRenderer.swift in Sources */,
+				D98BF7173068B09300A96B51 /* CarVisionHubApp.swift in Sources */,
+				D98BF7183068B09300A96B51 /* Messages.swift in Sources */,
+				D98BF7193068B09300A96B51 /* Planner.swift in Sources */,
+				D98BF71A3068B09300A96B51 /* CarLink.swift in Sources */,
+				D98BF71B3068B09300A96B51 /* ObservationReceiver.swift in Sources */,
+				D98BF71C3068B09300A96B51 /* Controller.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -827,7 +827,6 @@
 		D928AAFE3067F136006E7F53 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -847,7 +846,6 @@
 		D928AAFF3067F136006E7F53 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -867,7 +865,6 @@
 		D928AB013067F136006E7F53 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = YD6F6J96Q6;
@@ -886,7 +883,6 @@
 		D928AB023067F136006E7F53 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = YD6F6J96Q6;

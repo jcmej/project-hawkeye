@@ -70,6 +70,26 @@ struct ObstacleObservation: Codable, Equatable {
     var position: Vec2
 }
 
+/// Nearest obstacle to the car, measured from the car's learned outline (LiDAR phones).
+struct ClearanceMessage: Codable {
+    /// cm from the car's outline to the nearest obstacle.
+    var distance: Double
+    /// Direction relative to the car: "front", "front-left", "left", ... "front-right".
+    var bearing: String
+    /// The obstacle point, in arena cm.
+    var point: Vec2
+    /// Seconds until contact at the current velocity, if the car is closing in.
+    var timeToCollision: Double?
+
+    /// `degrees` = angle in the car's frame, 0 = straight ahead, positive = to the left.
+    static func bearingLabel(_ degrees: Double) -> String {
+        let labels = ["front", "front-left", "left", "back-left", "back", "back-right", "right", "front-right"]
+        var d = degrees.truncatingRemainder(dividingBy: 360)
+        if d < 0 { d += 360 }
+        return labels[Int((d + 22.5) / 45) % 8]
+    }
+}
+
 /// Sent by each phone ~30 times per second as a single UDP datagram of JSON.
 struct ObservationMessage: Codable {
     var type = "obs"
@@ -88,6 +108,8 @@ struct ObservationMessage: Codable {
     var fps: Double
     /// Present once this phone has captured a background.
     var grid: GridMessage? = nil
+    /// Nearest obstacle to the car (LiDAR phones with a learned car shape).
+    var clearance: ClearanceMessage? = nil
 }
 
 /// Car-frame velocity command, each component in -1...1.

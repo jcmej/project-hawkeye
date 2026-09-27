@@ -27,6 +27,8 @@ struct WorldState {
     /// Fused markerless occupancy (GridSpec layout), nil if no camera sends a grid.
     var occupancy: [Bool]?
     var gridCameras = 0
+    /// Closest obstacle to the car reported by any camera.
+    var clearance: ClearanceMessage?
 }
 
 /// Combines the latest observation from each camera into one world estimate.
@@ -109,6 +111,13 @@ final class Fusion {
         if ws.gridCameras > 0 {
             ws.occupancy = (0..<n).map { i in
                 requireAgreement ? (occ[i] > 0 && occ[i] == seen[i]) : occ[i] > 0
+            }
+        }
+
+        // Clearance: the most cautious (smallest) report wins.
+        for m in fresh {
+            if let c = m.clearance {
+                if ws.clearance == nil || c.distance < ws.clearance!.distance { ws.clearance = c }
             }
         }
 
