@@ -9,6 +9,30 @@ final class ObservationSender {
     private var browser: NWBrowser?
     private var connection: NWConnection?
     private var currentEndpoint: NWEndpoint?
+    private let sessionId = UUID().uuidString
+    private var hubId = ""
+    private var requestId = UUID().uuidString
+    private var action = "stop"
+    private var generation = 0
+    private var sent: [Int: Date] = [:]
+    private var lastReplySeq = -1
+    var onNavigation: ((NavigationStatus) -> Void)?
+
+    func requestNavigation(_ action: String) {
+        queue.async {
+            self.action = action
+            self.generation += 1
+            self.requestId = UUID().uuidString
+            if action == "stop", let c = self.connection {
+                // Stop need not wait for another camera frame.
+                let stop: [String: Any] = ["type": "stop", "sessionId": self.sessionId,
+                    "hubId": self.hubId, "generation": self.generation, "requestId": self.requestId]
+                if let data = try? JSONSerialization.data(withJSONObject: stop) {
+                    c.send(content: data, completion: .contentProcessed { _ in })
+                }
+            }
+        }
+    }
 
     /// Human-readable connection status. Called on a background queue.
     var onStatus: ((String) -> Void)?
@@ -21,6 +45,12 @@ final class ObservationSender {
             self.connection?.cancel()
             self.connection = nil
             self.currentEndpoint = nil
+            self.hubId = ""
+            self.action = "stop"
+            self.generation += 1
+            self.requestId = UUID().uuidString
+            self.sent = [:]
+            self.lastReplySeq = -1
 
             let host = manualHost.trimmingCharacters(in: .whitespacesAndNewlines)
             if host.isEmpty {
@@ -34,7 +64,13 @@ final class ObservationSender {
 
     func send(_ msg: ObservationMessage) {
         queue.async {
+            var msg = msg
+            msg.sessionId = self.sessionId
+            msg.navigation = NavigationRequest(id: self.requestId, generation: self.generation,
+                                               action: self.action, hubId: self.hubId)
             guard let c = self.connection, let data = try? self.encoder.encode(msg) else { return }
+            self.sent[msg.seq] = Date()
+            self.sent = self.sent.filter { Date().timeIntervalSince($0.value) < 1 }
             c.send(content: data, completion: .contentProcessed { _ in })
         }
     }
@@ -74,6 +110,27 @@ final class ObservationSender {
         c.start(queue: queue)
         connection = c
         currentEndpoint = endpoint
+        receive(on: c)
+    }
+
+    private func receive(on c: NWConnection) {
+        c.receiveMessage { [weak self] data, _, _, error in
+            guard let self, self.connection === c else { return }
+            if let data, let status = try? JSONDecoder().decode(NavigationStatus.self, from: data),
+               status.type == "navStatus", status.sessionId == self.sessionId,
+               status.seq >= self.lastReplySeq, let when = self.sent[status.seq],
+               Date().timeIntervalSince(when) < 0.7 {
+                self.lastReplySeq = status.seq
+                if self.hubId != status.hubId {
+                    self.hubId = status.hubId
+                    self.action = "stop"
+                    self.generation += 1
+                    self.requestId = UUID().uuidString
+                }
+                self.onNavigation?(status)
+            }
+            if error == nil { self.receive(on: c) }
+        }
     }
 
     private func report(_ s: String) { onStatus?(s) }

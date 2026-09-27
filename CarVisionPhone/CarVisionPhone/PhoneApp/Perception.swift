@@ -239,7 +239,7 @@ final class Perception {
 
     /// Step 2 each frame: build the observation from markers and (optional) raw occupancy.
     func process(markers: [ArucoMarker], rawOccupancy: Data?, clearance: ClearanceInfo? = nil,
-                 depthCar: Pose? = nil, time t: Double, fps: Double)
+                 depthCar: Pose? = nil, maskCameraChanges: Bool = true, time t: Double, fps: Double)
         -> (ObservationMessage, PhoneDebugState) {
         let s = settings
 
@@ -304,10 +304,10 @@ final class Perception {
 
                 // Ignore changes caused by things that are supposed to be there.
                 var masks: [(center: Vec2, radius: Double)] = []
-                if let carP = msg.car?.position ?? carHistory.last?.p {
+                if maskCameraChanges, let carP = msg.car?.position ?? carHistory.last?.p {
                     masks.append((carP, s.arena.carRadius + s.carMaskPadding))
                 }
-                if let g = msg.goal {
+                if maskCameraChanges, let g = msg.goal {
                     masks.append((g, s.goalMaskRadius))
                 }
                 for i in occ.indices where occ[i] {

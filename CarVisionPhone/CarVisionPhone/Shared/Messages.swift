@@ -110,6 +110,30 @@ struct ObservationMessage: Codable {
     var grid: GridMessage? = nil
     /// Nearest obstacle to the car (LiDAR phones with a learned car shape).
     var clearance: ClearanceMessage? = nil
+    // Python navigation metadata. Existing Mac receivers ignore these fields.
+    var arena: ArenaConfig? = nil
+    var carSource: String? = nil
+    var sentAt: Double? = nil
+    var sessionId: String? = nil
+    var navigation: NavigationRequest? = nil
+}
+
+struct NavigationRequest: Codable {
+    var id: String
+    var generation: Int
+    var action: String
+    var hubId: String
+}
+
+struct NavigationStatus: Codable {
+    var type: String
+    var hubId: String
+    var sessionId: String
+    var seq: Int
+    var requestId: String?
+    var state: String
+    var message: String
+    var path: [Vec2]
 }
 
 /// Car-frame velocity command, each component in -1...1.

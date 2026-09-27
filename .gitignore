@@ -5,3 +5,5 @@ DerivedData/
 build/
 *.framework/
 *.xcframework/
+__pycache__/
+.venv/

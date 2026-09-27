@@ -1,0 +1,2 @@
+websockets>=14,<18
+zeroconf>=0.132,<1

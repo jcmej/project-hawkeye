@@ -12,6 +12,7 @@ struct CarVisionPhoneApp: App {
 
 struct ContentView: View {
     @StateObject private var model = PhoneModel()
+    @Environment(\.scenePhase) private var scenePhase
     @AppStorage("cameraId") private var cameraId = ""
     @AppStorage("arenaWidth") private var arenaWidth = 200.0
     @AppStorage("arenaHeight") private var arenaHeight = 150.0
@@ -70,6 +71,9 @@ struct ContentView: View {
             model.start(manualHost: manualHost, zoom: savedZoom > 0 ? CGFloat(savedZoom) : nil)
         }
         .onChange(of: model.zoomFactor) { _, z in savedZoom = Double(z) }
+        .onChange(of: scenePhase) { _, phase in
+            if phase != .active { model.stopNavigation() }
+        }
     }
 
     // MARK: - Zoom
@@ -273,7 +277,10 @@ struct ContentView: View {
                         .font(.caption)
                 }
                 Spacer()
-                Button(st.goalPinned ? "Move goal" : "Tap to place") { model.placingGoal = true }
+                Button(st.goalPinned ? "Move goal" : "Tap to place") {
+                    model.stopNavigation()
+                    model.placingGoal = true
+                }
                     .font(.caption.bold())
                     .buttonStyle(.bordered)
             }
@@ -326,6 +333,7 @@ struct ContentView: View {
                         let t = ArenaTransform(arena: arena, size: size)
                         ArenaRenderer.draw(&ctx, t, car: model.debug.car, goal: model.debug.goal,
                                            obstacles: model.debug.obstacles,
+                                           path: model.navigationPath,
                                            occupied: model.debug.occupied,
                                            nearestObstacle: model.debug.clearance?.point)
                     }
@@ -337,6 +345,18 @@ struct ContentView: View {
                 Spacer()
                 if model.camera != nil { zoomControls }
             }
+
+            HStack {
+                Text(model.navigationIssue ?? model.navigationStartBlocker ?? model.navigationStatus)
+                    .font(.caption.bold())
+                Spacer()
+                Button("Start") { model.startNavigation() }
+                    .disabled(model.navigationStartBlocker != nil)
+                Button("Stop", role: .destructive) { model.stopNavigation() }
+            }
+            .buttonStyle(.borderedProminent)
+            .padding(10)
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
 
             HStack(spacing: 8) {
                 Button(model.arMode ? "Reset corners" : "Recalibrate") { model.recalibrate() }

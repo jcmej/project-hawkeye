@@ -59,6 +59,7 @@ final class VisionPipeline {
                 clearance: ClearanceInfo? = nil,
                 depthCar: Pose? = nil,
                 allowCameraBackground: Bool = true) -> [ArucoMarker] {
+        let processingStarted = Date().timeIntervalSince1970
         latestTime = t
         frameTimes.append(t)
         frameTimes.removeAll { t - $0 > 1.0 }
@@ -92,9 +93,21 @@ final class VisionPipeline {
                                            matrix: m)
         }
 
-        let (msg, frameDebug) = perception.process(markers: markers, rawOccupancy: raw,
+        var (msg, frameDebug) = perception.process(markers: markers, rawOccupancy: raw,
                                                    clearance: clearance, depthCar: depthCar,
+                                                   maskCameraChanges: depthOccupancy == nil,
                                                    time: t, fps: Double(frameTimes.count))
+        msg.arena = perception.settings.arena
+        msg.carSource = frameDebug.carSource
+        msg.sentAt = processingStarted
+        if arMode && projection == nil {
+            msg.calibrated = false
+            msg.car = nil
+            msg.grid = nil
+            msg.veto = true
+            msg.vetoReason = "AR tracking unavailable"
+            frameDebug.calibrated = false
+        }
         sender.send(msg)
         if let car = msg.car, frameDebug.carSource == "marker" { lastCar = (car, t) }
 
@@ -153,6 +166,43 @@ final class VisionPipeline {
 ///   put when off-screen. No zoom (ARKit controls the camera).
 /// - Classic: AVFoundation with zoom; all four corners must be visible to calibrate.
 final class PhoneModel: ObservableObject {
+    @Published var navigationStatus = "Navigation offline"
+    @Published var navigationOnline = false
+    @Published var navigationState = "waiting"
+    @Published var navigationPath: [Vec2] = []
+    @Published var navigationIssue: String?
+    private var navigationSeen = Date.distantPast
+    private var navigationTimer: Timer?
+
+    /// Explain the same conditions used by the button, rather than silently disabling it.
+    var navigationStartBlocker: String? {
+        if !navigationOnline { return "Waiting for a reply from Python" }
+        if navigationState == "blocked" { return navigationStatus }
+        if !debug.calibrated { return "Waiting for valid arena calibration / AR tracking" }
+        if debug.car == nil || debug.carSource != "marker" { return "Waiting for car marker ID 0" }
+        if debug.goal == nil { return "Waiting for the pinned goal coordinates" }
+        return nil
+    }
+
+    func startNavigation() {
+        navigationIssue = nil
+        if let blocker = navigationStartBlocker {
+            navigationIssue = blocker
+            return
+        }
+        let arena = pipeline.perception.settings.arena
+        if arMode, let w = arStatus.measuredWidth, let h = arStatus.measuredHeight,
+           abs(w - arena.width) > max(5, w * 0.1) || abs(h - arena.height) > max(5, h * 0.1) {
+            stopNavigation()
+            navigationIssue = "Use the measured arena dimensions first"
+            return
+        }
+        pipeline.sender.requestNavigation("start")
+    }
+    func stopNavigation() {
+        navigationIssue = nil
+        pipeline.sender.requestNavigation("stop")
+    }
     @Published var debug = PhoneDebugState()
     @Published var connectionStatus = "Not started"
     @Published var cameraError: String?
@@ -207,6 +257,24 @@ final class PhoneModel: ObservableObject {
         pipeline.sender.onStatus = { [weak self] s in
             DispatchQueue.main.async { self?.connectionStatus = s }
         }
+        pipeline.sender.onNavigation = { [weak self] status in
+            DispatchQueue.main.async {
+                guard let self else { return }
+                self.navigationSeen = Date()
+                self.navigationOnline = true
+                self.navigationStatus = status.message
+                self.navigationState = status.state
+                self.navigationPath = status.path
+            }
+        }
+        navigationTimer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { [weak self] _ in
+            guard let self, self.navigationOnline,
+                  Date().timeIntervalSince(self.navigationSeen) > 0.7 else { return }
+            self.navigationOnline = false
+            self.navigationStatus = "Navigation offline"
+            self.navigationPath = []
+            self.stopNavigation()
+        }
         ar?.onStatus = { [weak self] s in
             DispatchQueue.main.async { if self?.arStatus != s { self?.arStatus = s } }
         }
@@ -238,6 +306,7 @@ final class PhoneModel: ObservableObject {
 
     func apply(settings: Perception.Settings, manualHost: String, carMarkerHeightCm: Double,
                useLidar: Bool = true) {
+        stopNavigation()
         pipeline.perception.settings = settings
         ar?.carMarkerHeight = Float(carMarkerHeightCm / 100)
         ar?.arena = settings.arena
@@ -248,6 +317,7 @@ final class PhoneModel: ObservableObject {
     /// Arena settings changed: rebuild the mapping and drop the background,
     /// but keep AR-pinned corners (they're physical points, not settings).
     func settingsChanged() {
+        stopNavigation()
         setCameraLocked(false)
         pipeline.requestClearBackground()
         pipeline.perception.requestRecalibration()
@@ -261,17 +331,20 @@ final class PhoneModel: ObservableObject {
 
     /// Call with the arena EMPTY (car parked outside). Locks the camera first.
     func captureBackground() {
+        stopNavigation()
         setCameraLocked(true)
         pipeline.requestBackgroundCapture()
     }
 
     /// LiDAR mode: measure the car's outline (keep it clear; slowly circle it).
     func learnCarShape() {
+        stopNavigation()
         ar?.startLearningCarShape()
     }
 
     /// LiDAR mode: forget all mapped obstacles (e.g. after rearranging the arena).
     func clearObstacles() {
+        stopNavigation()
         ar?.clearObstacleMap()
     }
 
@@ -282,11 +355,13 @@ final class PhoneModel: ObservableObject {
     /// AR mode: pin (or move) the goal to the tapped floor spot.
     func placeGoal(atViewPoint point: CGPoint) {
         guard placingGoal, let ar else { return }
+        stopNavigation()
         if ar.placeGoal(atViewPoint: point) { placingGoal = false }
     }
 
     /// AR mode: forget the pinned goal. Rescan the goal marker or tap to place a new one.
     func resetGoal() {
+        stopNavigation()
         placingGoal = false
         ar?.resetGoal()
     }
