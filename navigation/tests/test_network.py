@@ -2,6 +2,7 @@
 import asyncio
 import importlib.util
 import json
+import math
 import socket
 import sys
 import time
@@ -33,7 +34,8 @@ class NetworkTest(unittest.IsolatedAsyncioTestCase):
             nonlocal seq, status
             until = time.monotonic()+seconds
             while time.monotonic() < until:
-                m = observation(seq=seq, generation=generation, request=action, hub=status.get('hubId', ''))
+                m = observation(seq=seq, generation=generation, request=action, hub=status.get('hubId', ''),
+                                heading=math.atan2(90, 140))   # facing the goal, so it drives rather than turns
                 m['sentAt'] = time.time()
                 seq += 1
                 phone.sendto(json.dumps(m).encode(), ('127.0.0.1', port))

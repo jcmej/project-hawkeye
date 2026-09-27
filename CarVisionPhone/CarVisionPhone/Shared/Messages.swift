@@ -138,6 +138,9 @@ struct NavigationStatus: Codable {
     var state: String
     var message: String
     var path: [Vec2]
+    /// Hub wall-clock times (Unix s) for the acknowledged observation; used for clock sync.
+    var hubReceivedAt: Double?
+    var hubSentAt: Double?
 }
 
 /// Car-frame velocity command, each component in -1...1.

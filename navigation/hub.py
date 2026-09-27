@@ -61,6 +61,7 @@ class Receiver(asyncio.DatagramProtocol):
         self.transport = None
         self.reply_session = None
         self.reply_seq = -1
+        self.reply_received = 0.0
 
     def connection_made(self, transport):
         self.transport = transport
@@ -84,6 +85,7 @@ class Receiver(asyncio.DatagramProtocol):
                 # Acknowledge receipt even when validation rejects the observation.
                 # Otherwise the phone cannot display why the initial handshake failed.
                 self.reply_session, self.reply_seq = msg['sessionId'], msg['seq']
+                self.reply_received = time.time()
             self.nav.ingest(msg, car_ready=self.car is None or self.car.ready)
         except (ValueError, TypeError, UnicodeError):
             if addr == self.peer:
@@ -92,7 +94,10 @@ class Receiver(asyncio.DatagramProtocol):
     def reply(self):
         if self.peer and self.reply_session:
             status = self.nav.status()
-            status.update(sessionId=self.reply_session, seq=self.reply_seq)
+            # Receive/send wall times let the phone measure its clock offset (NTP-style),
+            # so the latency check doesn't depend on the two clocks agreeing.
+            status.update(sessionId=self.reply_session, seq=self.reply_seq,
+                          hubReceivedAt=self.reply_received, hubSentAt=time.time())
             if self.nav.state != 'blocked' and not self.nav.running and self.car is not None and not self.car.ready:
                 status['message'] = 'Car not responding'
                 status['state'] = 'blocked'

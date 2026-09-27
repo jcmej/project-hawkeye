@@ -23,9 +23,12 @@ struct ContentView: View {
     @AppStorage("previewFill") private var fillScreen = true
     @AppStorage("useAR") private var useAR = true
     @AppStorage("carMarkerHeight") private var carMarkerHeight = 10.0   // cm above the floor
+    @AppStorage("markerToCenter") private var markerToCenter = 8.0      // cm; marker is at the car's back edge
     @AppStorage("useLidar") private var useLidar = true
     @State private var showSettings = false
     @State private var showMap = true
+    @AppStorage("statusPanelCollapsed") private var statusCollapsed = false
+    @AppStorage("arPanelCollapsed") private var arCollapsed = false
     @State private var pinchBase: CGFloat?
 
     private var arena: ArenaConfig {
@@ -38,7 +41,7 @@ struct ContentView: View {
     }
 
     private var settings: Perception.Settings {
-        .init(cameraId: cameraId, arena: arena)
+        .init(cameraId: cameraId, arena: arena, markerToCenter: markerToCenter)
     }
 
     var body: some View {
@@ -303,18 +306,14 @@ struct ContentView: View {
 
     private var overlays: some View {
         VStack(spacing: 10) {
-            statusPanel
-                .padding(10)
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+            collapsible($statusCollapsed, summary: statusSummary) { statusPanel }
 
             if model.debug.clearanceActive {
                 clearanceReadout
             }
 
             if model.arMode {
-                arCalibrationPanel
-                    .padding(10)
-                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+                collapsible($arCollapsed, summary: arSummary) { arCalibrationPanel }
             }
 
             if model.debug.veto {
@@ -388,6 +387,55 @@ struct ContentView: View {
         .padding(.vertical, 8)
     }
 
+    /// An info box with a button to shrink it to a one-line summary (tap the summary to expand),
+    /// so the camera view isn't covered. Safety banners (veto, clearance) stay outside these boxes.
+    private func collapsible<Content: View>(_ collapsed: Binding<Bool>, summary: (text: String, color: Color),
+                                            @ViewBuilder content: () -> Content) -> some View {
+        Group {
+            if collapsed.wrappedValue {
+                Button { collapsed.wrappedValue = false } label: {
+                    HStack(spacing: 6) {
+                        Text(summary.text).lineLimit(1).foregroundColor(summary.color)
+                        Spacer(minLength: 4)
+                        Image(systemName: "chevron.down")
+                    }
+                    .font(.caption.bold())
+                    .padding(.horizontal, 10).padding(.vertical, 6)
+                }
+                .foregroundColor(.primary)
+                .background(.ultraThinMaterial, in: Capsule())
+            } else {
+                HStack(alignment: .top, spacing: 6) {
+                    content()
+                    Button { collapsed.wrappedValue = true } label: {
+                        Image(systemName: "chevron.up.circle.fill").font(.title3)
+                    }
+                    .foregroundColor(.secondary)
+                    .accessibilityLabel("Minimize")
+                }
+                .padding(10)
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+            }
+        }
+    }
+
+    private var statusSummary: (text: String, color: Color) {
+        let d = model.debug
+        if let err = model.cameraError { return (err, .red) }
+        return ("\(d.calibrated ? "Calibrated" : "Not calibrated") · \(Int(d.fps)) fps · \(model.connectionStatus)",
+                d.calibrated ? .primary : .orange)
+    }
+
+    private var arSummary: (text: String, color: Color) {
+        let st = model.arStatus
+        guard st.trackingNormal else { return ("AR: \(st.tracking)", .orange) }
+        if !st.floorFound { return ("AR: find the floor", .orange) }
+        if !st.complete { return ("AR: corners \(st.captured.count)/4", .orange) }
+        let goal = st.goalPinned ? "goal ✓" : "no goal"
+        let car = st.carProfile != nil ? " · car shape ✓" : ""
+        return ("AR: corners ✓ · \(goal)\(car)", st.goalPinned ? .green : .orange)
+    }
+
     private var statusPanel: some View {
         let d = model.debug
         return VStack(alignment: .leading, spacing: 4) {
@@ -427,6 +475,11 @@ struct ContentView: View {
             .font(.caption)
             Text("Markers: \(d.markerIds.isEmpty ? "none" : d.markerIds.map(String.init).joined(separator: ", "))")
                 .font(.caption).foregroundColor(.secondary)
+            if let c = model.clockSync {
+                Text(String(format: "Clock sync: laptop %+.0f ms vs phone · round trip %.0f ms",
+                            c.offset * 1000, c.roundTrip * 1000))
+                    .font(.caption.monospacedDigit()).foregroundColor(.secondary)
+            }
             if let car = d.car {
                 Text(String(format: "Car (%.0f, %.0f) cm  %.0f°  %.0f cm/s",
                             car.position.x, car.position.y, car.heading * 180 / .pi, d.carSpeed)
@@ -464,6 +517,13 @@ struct ContentView: View {
                     numberField("Height, marker 2→5 (cm)", $arenaHeight)
                     numberField("Car radius (cm)", $carRadius)
                     numberField("Obstacle radius (cm)", $obstacleRadius)
+                }
+                Section {
+                    numberField("Marker center → car center (cm)", $markerToCenter)
+                } header: {
+                    Text("Car marker")
+                } footer: {
+                    Text("The car's marker sits at its back edge, with the marker's top toward the car's front. Measure from the middle of the marker forward to the middle of the car. Changing this requires relearning the car shape.")
                 }
                 Section {
                     TextField("Hub IP (blank = auto-discover)", text: $manualHost)

@@ -116,7 +116,7 @@ class NavigationTests(unittest.TestCase):
         return self.nav.command(now)
 
     def test_trusted_lidar_pose_drives_slower(self):
-        m = self.start()
+        m = self.start(heading=math.atan2(90, 140))   # facing the goal
         marker_cmd = self.frame(m, 2, .05)
         lidar_cmd = self.frame(m, 3, .1, carSource='LiDAR', markerAge=.8, trackQuality=.9)
         self.assertEqual(self.nav.state, 'driving')
@@ -184,23 +184,75 @@ class NavigationTests(unittest.TestCase):
         self.frame(m, 3, .1, car=car, grid=observation(occupied=[6*40+12])['grid'])
         self.assertIn(6*40+12, self.nav.map.occupied)
 
+    def test_remembered_car_cells_clear_under_car(self):
+        # A lagging pose lets part of the car show up as occupied beside it; once the pose
+        # catches up and that cell is under the car, the remembered cell must not stop the run.
+        m = self.start()
+        self.frame(m, 2, .05, grid=observation(occupied=[1*40+3])['grid'])
+        self.assertTrue(self.nav.running, self.nav.message)
+        car = {'position': {'x': 24, 'y': 20}, 'heading': 0}
+        self.assertNotEqual(self.frame(m, 3, .1, car=car), (0, 0, 0))
+        self.assertTrue(self.nav.running, self.nav.message)
+
     def test_body_frame(self):
-        self.start(heading=math.pi/2)
+        # Facing almost toward the waypoint (bearing ~0.57 rad): drive forward, slightly right.
+        self.start(heading=.7)
         vx, vy, _ = self.nav.command(.1)
         self.assertGreater(vx, 0)
         self.assertLess(vy, 0)
 
+    def test_turns_in_place_to_face_waypoint(self):
+        self.start(heading=math.pi/2)   # facing +y; the goal is to the right (~0.57 rad)
+        vx, vy, omega = self.nav.command(.1)
+        self.assertEqual((vx, vy), (0, 0))
+        self.assertLess(omega, 0)       # clockwise toward the goal
+
+    def simulate(self, lag, turn_rate, start_heading=0., steps=3000):
+        """Drive a simulated car whose pose reaches the hub `lag` s late. Returns
+        (final position, final heading, number of turn-direction reversals)."""
+        m = self.start(heading=start_heading)
+        dt, pos, heading = .05, [30., 30.], start_heading
+        history, reversals, last_turn = [], 0, 0
+        for i in range(2, steps):
+            now = i*dt
+            history.append((now, list(pos), heading))
+            seen = next(h for h in reversed(history) if h[0] <= now-lag+1e-9) if now-lag >= history[0][0] else history[0]
+            m['seq'] = i
+            m['car'] = {'position': dict(zip(('x', 'y'), seen[1])), 'heading': seen[2]}
+            m['sentAt'] = 1000-(now-seen[0])
+            self.feed(m, now=now)
+            vx, vy, omega = self.nav.command(now)
+            pos[0] += (vx*math.cos(heading) - vy*math.sin(heading))*30*dt
+            pos[1] += (vx*math.sin(heading) + vy*math.cos(heading))*30*dt
+            heading += omega*turn_rate*dt
+            if omega and vx == vy == 0:
+                turn = 1 if omega > 0 else -1
+                reversals += last_turn and turn != last_turn
+                last_turn = turn
+            if not self.nav.running:
+                break
+        return pos, heading, reversals
+
+    def test_lagging_camera_does_not_overturn(self):
+        # A fast-turning car seen through a 0.3 s camera lag, starting 90° off the goal.
+        pos, _, reversals = self.simulate(lag=.3, turn_rate=12, start_heading=math.pi/2+.57)
+        self.assertEqual(self.nav.state, 'reached', self.nav.message)
+        self.assertLess(dist(pos, (170, 120)), 5)
+        self.assertLessEqual(reversals, 2)
+
     def test_closed_loop(self):
         obstacle = [y*40+x for y in range(10, 17) for x in range(18, 22)]
         m = self.start(occupied=obstacle)
-        pos = [30., 30.]
+        pos, heading = [30., 30.], 0.
         for i in range(2, 1600):
             m['seq'] = i
             m['car']['position'] = dict(zip(('x', 'y'), pos))
+            m['car']['heading'] = heading
             self.feed(m, now=i*.05)
-            vx, vy, _ = self.nav.command(i*.05)
-            pos[0] += vx*30*.05
-            pos[1] += vy*30*.05
+            vx, vy, omega = self.nav.command(i*.05)
+            pos[0] += (vx*math.cos(heading) - vy*math.sin(heading))*30*.05
+            pos[1] += (vx*math.sin(heading) + vy*math.cos(heading))*30*.05
+            heading += omega*3*.05
             self.assertTrue(self.nav.map.free(pos))
             if not self.nav.running:
                 break

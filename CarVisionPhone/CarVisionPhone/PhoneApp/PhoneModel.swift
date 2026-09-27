@@ -214,6 +214,8 @@ final class PhoneModel: ObservableObject {
     }
     @Published var debug = PhoneDebugState()
     @Published var connectionStatus = "Not started"
+    /// Laptop clock minus phone clock, and the round trip it was measured over (s).
+    @Published var clockSync: (offset: Double, roundTrip: Double)?
     @Published var cameraError: String?
     @Published var arStatus = ARCalibrationStatus()
     /// Classic mode zoom, in device units (see ZoomInfo).
@@ -264,6 +266,14 @@ final class PhoneModel: ObservableObject {
 
         pipeline.onDebug = { [weak self] d in
             DispatchQueue.main.async { self?.debug = d }
+        }
+        pipeline.sender.onClock = { [weak self] offset, roundTrip in
+            DispatchQueue.main.async {
+                guard let self else { return }
+                // Republish only on a visible change (replies arrive many times a second).
+                if let c = self.clockSync, abs(c.offset - offset) < 0.001, abs(c.roundTrip - roundTrip) < 0.001 { return }
+                self.clockSync = (offset, roundTrip)
+            }
         }
         pipeline.sender.onStatus = { [weak self] s in
             DispatchQueue.main.async { self?.connectionStatus = s }
@@ -320,6 +330,7 @@ final class PhoneModel: ObservableObject {
         stopNavigation()
         pipeline.perception.settings = settings
         ar?.carMarkerHeight = Float(carMarkerHeightCm / 100)
+        ar?.setMarkerToCenter(settings.markerToCenter)
         ar?.arena = settings.arena
         ar?.useDepth = useLidar
         if started { pipeline.sender.restart(manualHost: manualHost) }

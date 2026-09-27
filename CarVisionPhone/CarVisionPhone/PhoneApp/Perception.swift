@@ -76,6 +76,10 @@ final class Perception {
     struct Settings {
         var cameraId: String
         var arena: ArenaConfig
+        /// How far the car's center is ahead of its marker's center (cm, along the marker's
+        /// "top" direction). The marker sits at the car's back edge, so poses are shifted
+        /// forward by this much to put the reported position at the car's center.
+        var markerToCenter: Double = 0
         /// How far ahead (seconds) the collision check projects the car's motion.
         var vetoHorizon: Double = 0.6
         /// Brightness difference (0-255) that counts as "changed".
@@ -384,12 +388,15 @@ final class Perception {
     }
 
     /// Heading = direction from the marker's bottom edge to its top edge, in world frame.
+    /// Position = the car's center: the marker's center moved forward by `markerToCenter`.
     private func pose(of m: ArucoMarker, _ h: Homography) -> Pose? {
         guard let w0 = h.apply(m.c0), let w1 = h.apply(m.c1),
               let w2 = h.apply(m.c2), let w3 = h.apply(m.c3) else { return nil }
         let center = (w0 + w1 + w2 + w3) * 0.25
         let front = (w0 + w1) * 0.5 - (w3 + w2) * 0.5
-        return Pose(position: center, heading: atan2(front.y, front.x))
+        let heading = atan2(front.y, front.x)
+        return Pose(position: center + Vec2(cos(heading), sin(heading)) * settings.markerToCenter,
+                    heading: heading)
     }
 
     /// Bigger marker in the image = more pixels = more trustworthy estimate.

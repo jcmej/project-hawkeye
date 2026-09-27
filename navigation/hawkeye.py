@@ -19,6 +19,31 @@ HOLD = 1.5
 RESUME_FRAMES = 3
 RESUME_JUMP = 5    # cm between consecutive readings while reacquiring
 MAX_JUMP = 12      # cm between consecutive readings while driving
+# Steering. The car faces the next waypoint, turning in place while it is more than
+# TURN_IN_PLACE off, then drives mostly forward. Within FACE_MIN_DIST of the waypoint
+# its bearing is too noisy to steer by, so the car keeps its heading and slides in.
+TURN_IN_PLACE = .3  # rad
+FACE_MIN_DIST = 8   # cm
+# The camera pose is a few hundred ms old, so continuous correction overshoots. Turning
+# in place and the final approach to the goal therefore move in short pulses: each
+# covers PULSE_FRACTION of the remaining error at the car's measured rate, then the car
+# stops and waits for a camera frame captured SETTLE s after it stopped before the next.
+# Turning continues until the car is within ALIGNED of the waypoint's bearing, or a
+# pulse carries it past the bearing to within TURN_IN_PLACE (the car's smallest step is
+# too big to settle closer, and chasing it would swing back and forth forever).
+ALIGNED = .1        # rad
+APPROACH = 15       # cm from the goal where driving switches to pulses
+PULSE_FRACTION = .7
+MIN_PULSE, MAX_PULSE = .05, .4   # s (the hub sends commands every .05 s)
+SETTLE = .1         # s
+TURN_POWER = .2     # motor power for turning in place
+# Heading correction while driving is continuous, so it is sized to settle over about
+# four camera lags given how fast the car turns (at most DRIVE_TURN_MAX power).
+DRIVE_TURN_MAX = .1
+# Starting guesses for how fast the car moves (at TURN_POWER and approach power); each
+# pulse's measured result refines them, within these bounds.
+TURN_RATE, TURN_RATE_RANGE = 2., (.2, 20.)    # rad/s
+DRIVE_RATE, DRIVE_RATE_RANGE = 10., (.5, 100.)  # cm/s
 
 
 def num(x):
@@ -156,6 +181,12 @@ class Navigator:
         self.pose = None         # last trusted (position, heading, source)
         self.hold_since = None   # set while holding for a trusted pose
         self.good = 0            # consistent readings while reacquiring
+        self.captured = -math.inf  # monotonic time the latest frame was captured
+        self.lag = .2            # smoothed camera frame age on arrival, s
+        self.turn_rate, self.drive_rate = TURN_RATE, DRIVE_RATE
+        self.turning = False
+        self.pulse = None        # (kind, command, start, end, start pose) of the current pulse
+        self.pulse_stopped = None  # when the last pulse's motors actually stopped
         self.running = False
         self.state, self.message = 'waiting', 'Waiting for iPhone'
 
@@ -184,8 +215,9 @@ class Navigator:
                 return
             if session == self.session and seq <= self.seq:
                 return
-            if not -.1 <= wall-num(m['sentAt']) <= AGE:
-                raise ValueError('Camera delay or phone/laptop clock mismatch')
+            delay = wall-num(m['sentAt'])
+            if not -.1 <= delay <= AGE:
+                raise ValueError(f'Camera delay {delay*1000:.0f} ms (limit {AGE*1000:.0f}) or phone/laptop clock mismatch')
             request = m['navigation']
             if (not isinstance(request['id'], str) or request['action'] not in ('start', 'stop')
                     or type(request['generation']) is not int or request['generation'] < 0):
@@ -198,6 +230,8 @@ class Navigator:
                 self.generation = request['generation']
                 self.stop('Connected — tap Start', 'ready')
             self.msg, self.seq, self.received = m, seq, now
+            self.captured = now-(wall-num(m['sentAt']))
+            self.lag = .8*self.lag + .2*max(0, now-self.captured)
             if request['generation'] < self.generation:
                 return
             new_request = request['generation'] > self.generation and request['id'] != self.last_request
@@ -232,6 +266,7 @@ class Navigator:
                     return
                 self.heading = pose[1]
                 self.pose, self.hold_since, self.good = pose, None, 0
+                self.turning, self.pulse, self.pulse_stopped = False, None, None
                 self.running = True
                 self.state, self.message = 'driving', self.driving_message()
             elif self.running:
@@ -243,6 +278,7 @@ class Navigator:
                 # except where the car itself is (last trusted position while holding).
                 live_map.mask_car(self.pose[0])
                 self.map.occupied |= live_map.occupied
+                self.map.mask_car(self.pose[0])   # also forget car cells remembered from lagging poses
                 self.map.obstacles.update(live_map.obstacles)
         except (KeyError, TypeError, ValueError, AttributeError, OverflowError) as e:
             self.stop(str(e) or 'Invalid camera observation', 'blocked')
@@ -339,23 +375,66 @@ class Navigator:
             if d < .1:
                 self.stop('Route needs replanning — tap Start')
                 return (0, 0, 0)
-            speed = self.speed*min(1, max(.4, dist(p, self.goal)/30))
+            if self.pulse:
+                kind, cmd, start, end, (p0, h0) = self.pulse
+                if now < end:
+                    return cmd
+                if self.pulse_stopped is None:
+                    self.pulse_stopped = now   # commands arrive every tick, so this can pass `end`
+                if self.captured < self.pulse_stopped+SETTLE:
+                    return (0, 0, 0)   # wait for a frame showing where the pulse left the car
+                moved = dist(p, p0) if kind == 'drive' else abs(wrap(heading-h0))
+                self.learn_rate(kind, moved, self.pulse_stopped-start)
+                self.pulse, self.pulse_stopped = None, None
+                if kind == 'turn' and self.turning and cmd[2]*wrap(self.heading-heading) < 0:
+                    # Overshot: a smaller step is not possible, so stop turning if close enough.
+                    self.turning = abs(wrap(self.heading-heading)) > TURN_IN_PLACE
+            if d > FACE_MIN_DIST:
+                self.heading = math.atan2(target[1]-p[1], target[0]-p[0])
+            angle = wrap(self.heading-heading)
+            if abs(angle) <= ALIGNED or abs(angle) > TURN_IN_PLACE:
+                self.turning = abs(angle) > TURN_IN_PLACE
+            if self.turning:
+                return self.start_pulse('turn', (0, 0, math.copysign(TURN_POWER, angle)), abs(angle), now)
+            to_goal = dist(p, self.goal)
+            speed = self.speed*min(1, max(.4, to_goal/30))
             if source == 'LiDAR':
                 speed *= LIDAR_SPEED
             x, y = (target[0]-p[0])*speed/d, (target[1]-p[1])*speed/d
-            angle = (self.heading-heading+math.pi) % (2*math.pi)-math.pi
-            omega = max(-.2, min(.2, angle*1.2))
-            if abs(angle) > .4:
-                x = y = 0
-            return x*math.cos(heading)+y*math.sin(heading), -x*math.sin(heading)+y*math.cos(heading), omega
+            body = x*math.cos(heading)+y*math.sin(heading), -x*math.sin(heading)+y*math.cos(heading)
+            if to_goal < APPROACH:
+                return self.start_pulse('drive', (*body, 0), to_goal, now)
+            gain = TURN_POWER/self.turn_rate/(4*max(.1, self.lag))   # power per rad of error
+            return (*body, max(-DRIVE_TURN_MAX, min(DRIVE_TURN_MAX, angle*gain)))
         except (KeyError, TypeError, ValueError, IndexError) as e:
             self.stop(f'Invalid observation: {e}')
             return (0, 0, 0)
+
+    def start_pulse(self, kind, cmd, error, now):
+        """Move for long enough to cover PULSE_FRACTION of `error` at the car's measured rate."""
+        rate = self.turn_rate if kind == 'turn' else self.drive_rate
+        length = max(MIN_PULSE, min(MAX_PULSE, PULSE_FRACTION*error/rate))
+        self.pulse = (kind, cmd, now, now+length, self.pose[:2])
+        return cmd
+
+    def learn_rate(self, kind, moved, length):
+        """Blend a pulse's measured speed into the car's estimated rate."""
+        if length <= 0 or moved < (.02 if kind == 'turn' else .5):
+            return   # too little movement to measure over the pose noise
+        lo, hi = TURN_RATE_RANGE if kind == 'turn' else DRIVE_RATE_RANGE
+        if kind == 'turn':
+            self.turn_rate = max(lo, min(hi, .5*self.turn_rate + .5*moved/length))
+        else:
+            self.drive_rate = max(lo, min(hi, .5*self.drive_rate + .5*moved/length))
 
     def status(self):
         return {'type': 'navStatus', 'hubId': self.hub_id, 'sessionId': self.session,
                 'seq': self.seq, 'requestId': self.last_request, 'state': self.state,
                 'message': self.message, 'path': [{'x': x, 'y': y} for x, y in self.path]}
+
+
+def wrap(angle):
+    return (angle+math.pi) % (2*math.pi)-math.pi
 
 
 def motor_payload(command, seq):

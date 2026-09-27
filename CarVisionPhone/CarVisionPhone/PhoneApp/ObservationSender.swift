@@ -16,6 +16,12 @@ final class ObservationSender {
     private var generation = 0
     private var sent: [Int: Date] = [:]
     private var lastReplySeq = -1
+    /// Recent clock-sync samples: hub clock minus phone clock (s) and the round trip it came from.
+    private var clockSamples: [(at: Date, offset: Double, roundTrip: Double)] = []
+    /// Hub clock minus phone clock, from the fastest recent round trip; nil until the hub reports times.
+    private var clockOffset: Double?
+    /// Called with (offset, round trip) in seconds whenever the clock estimate changes.
+    var onClock: ((Double, Double) -> Void)?
     var onNavigation: ((NavigationStatus) -> Void)?
 
     func requestNavigation(_ action: String) {
@@ -51,6 +57,8 @@ final class ObservationSender {
             self.requestId = UUID().uuidString
             self.sent = [:]
             self.lastReplySeq = -1
+            self.clockSamples = []
+            self.clockOffset = nil
 
             let host = manualHost.trimmingCharacters(in: .whitespacesAndNewlines)
             if host.isEmpty {
@@ -68,6 +76,8 @@ final class ObservationSender {
             msg.sessionId = self.sessionId
             msg.navigation = NavigationRequest(id: self.requestId, generation: self.generation,
                                                action: self.action, hubId: self.hubId)
+            // The hub checks frame age against its own clock; send the timestamp in hub time.
+            if let offset = self.clockOffset, let t = msg.sentAt { msg.sentAt = t + offset }
             guard let c = self.connection, let data = try? self.encoder.encode(msg) else { return }
             self.sent[msg.seq] = Date()
             self.sent = self.sent.filter { Date().timeIntervalSince($0.value) < 1 }
@@ -121,6 +131,9 @@ final class ObservationSender {
                status.seq >= self.lastReplySeq, let when = self.sent[status.seq],
                Date().timeIntervalSince(when) < 0.7 {
                 self.lastReplySeq = status.seq
+                if let t1 = status.hubReceivedAt, let t2 = status.hubSentAt {
+                    self.addClockSample(sent: when, hubReceived: t1, hubSent: t2, received: Date())
+                }
                 if self.hubId != status.hubId {
                     self.hubId = status.hubId
                     self.action = "stop"
@@ -131,6 +144,19 @@ final class ObservationSender {
             }
             if error == nil { self.receive(on: c) }
         }
+    }
+
+    /// NTP-style estimate: the offset is exact if both network legs take equally long, and off by
+    /// at most half the round trip otherwise, so keep the sample with the fastest round trip.
+    private func addClockSample(sent: Date, hubReceived t1: Double, hubSent t2: Double, received: Date) {
+        let t0 = sent.timeIntervalSince1970, t3 = received.timeIntervalSince1970
+        let roundTrip = (t3 - t0) - (t2 - t1)
+        guard roundTrip >= 0, roundTrip < 0.5 else { return }
+        clockSamples.append((received, ((t1 - t0) + (t2 - t3)) / 2, roundTrip))
+        clockSamples.removeAll { received.timeIntervalSince($0.at) > 10 }
+        guard let best = clockSamples.min(by: { $0.roundTrip < $1.roundTrip }) else { return }
+        clockOffset = best.offset
+        onClock?(best.offset, best.roundTrip)
     }
 
     private func report(_ s: String) { onStatus?(s) }

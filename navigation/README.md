@@ -72,8 +72,16 @@ after updating to see these diagnostics.
 - The map stays fixed for a run. New obstacle evidence can block a route but
   cannot erase its original obstacles. To change the scene, Stop, use the
   existing Clear obstacles / rescan controls, and Start again.
-- The planner uses A* and the controller follows clear segments while holding
-  its starting heading. Live car observations correct the car's movement.
+- The planner uses A* and the controller follows clear segments: it turns in
+  place to face the next waypoint (while more than ~17° off), then drives toward
+  it. Live car observations correct the car's movement.
+- The camera pose arrives a few hundred ms late, so turning in place and the last
+  15 cm to the goal happen in short pulses: move part of the remaining error, stop,
+  wait for a frame taken after the car stopped, repeat. Each pulse measures how
+  fast the car actually turns/drives and sizes the next one from that, so there is
+  no speed to calibrate by hand. Tuning constants are at the top of `hawkeye.py`.
+- The phone reports the car's center: its marker sits at the car's back edge,
+  and the phone setting "Marker center → car center" shifts the pose forward.
 - A LiDAR (depth-tracked) car pose is used only if the marker was read within
   the last 1.5 s and the outline fit is at least 75% as good as usual; the car
   then drives at 60% power. Any untrusted pose (car not visible, weak fit, old

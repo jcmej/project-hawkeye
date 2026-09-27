@@ -18,6 +18,9 @@ struct CarProfile: Codable, Equatable {
     var minForward: Double, maxForward: Double
     var minLeft: Double, maxLeft: Double
     var height: Double
+    /// The marker-to-center offset (cm) the car's pose used when this was learned. The
+    /// outline is relative to that pose, so it's invalid if the offset changes.
+    var markerToCenter: Double?
 
     var length: Double { maxForward - minForward }
     var width: Double { maxLeft - minLeft }
@@ -256,6 +259,24 @@ final class ARCameraManager: NSObject, ARSessionDelegate {
            let profile = try? JSONDecoder().decode(CarProfile.self, from: data) {
             carProfile = profile
             status.carProfile = profile
+        }
+    }
+
+    private var markerToCenter = 0.0
+
+    /// Where the car's center is relative to its marker (cm). The learned outline is relative
+    /// to the car's pose, so a different offset discards it until it's relearned.
+    func setMarkerToCenter(_ cm: Double) {
+        queue.async {
+            self.markerToCenter = cm
+            guard let p = self.carProfile, abs((p.markerToCenter ?? 0) - cm) > 0.5 else { return }
+            self.carProfile = nil
+            self.trackedCar = nil
+            self.typicalInliers = 0
+            self.typicalCoverage = 0
+            self.status.carProfile = nil
+            self.status.carLearnMessage = "Car marker position changed — relearn the car shape"
+            UserDefaults.standard.removeObject(forKey: Self.profileKey)
         }
     }
 
@@ -719,7 +740,7 @@ final class ARCameraManager: NSObject, ARSessionDelegate {
         }
         if let pose {
             if let profile {
-                pendingClearance = computeClearance(pose: pose, profile: profile,
+                pendingClearance = computeClearance(pose: pose, profile: profile, carRadius: arena.carRadius,
                                                     ax: pax, ay: pay, heights: heights, cols: cols)
             }
         }
@@ -954,7 +975,8 @@ final class ARCameraManager: NSObject, ARSessionDelegate {
         let heightsSorted = learnHeights.sorted()
         let profile = CarProfile(minForward: fs.min()!, maxForward: fs.max()! + learnCell,
                                  minLeft: ls.min()!, maxLeft: ls.max()! + learnCell,
-                                 height: Double(heightsSorted[heightsSorted.count / 2]) * 100)
+                                 height: Double(heightsSorted[heightsSorted.count / 2]) * 100,
+                                 markerToCenter: markerToCenter)
         guard (6...70).contains(profile.length), (6...70).contains(profile.width) else {
             status.carLearnMessage = String(format: "Measured %.0f×%.0f cm, which doesn't look like the car — try again with it clear",
                                             profile.length, profile.width)
@@ -970,7 +992,9 @@ final class ARCameraManager: NSObject, ARSessionDelegate {
 
     /// Distance from the car's outline to the nearest obstacle: live LiDAR points on a
     /// 2 cm grid (3+ points per cell) plus remembered map cells for things out of view.
-    private func computeClearance(pose: Pose, profile: CarProfile, ax: [Float], ay: [Float],
+    /// Like the obstacle map, anything within the configured car radius is the car itself:
+    /// the learned outline often covers only the side of the car the phone can see.
+    private func computeClearance(pose: Pose, profile: CarProfile, carRadius: Double, ax: [Float], ay: [Float],
                                   heights: [Float], cols: Int) -> ClearanceInfo {
         var cells: [Int: Int] = [:]
         for i in ax.indices {
@@ -978,7 +1002,8 @@ final class ARCameraManager: NSObject, ARSessionDelegate {
             guard hgt > clearanceMinHeight, hgt < maxObstacleHeight else { continue }
             let p = Vec2(Double(ax[i]), Double(ay[i]))
             let q = (p - pose.position).rotated(by: -pose.heading)
-            guard q.length < clearanceRange, profile.distance(to: q) >= carMargin else { continue }
+            guard q.length < clearanceRange, q.length >= carRadius,
+                  profile.distance(to: q) >= carMargin else { continue }
             cells[Int(floor(p.x / 2)) * 100_000 + Int(floor(p.y / 2)), default: 0] += 1
         }
         var candidates: [(point: Vec2, distance: Double)] = []
