@@ -16,6 +16,10 @@
  * vx = forward, vy = left (strafe), omega = counterclockwise, the same as
  * DriveCommand in CarVisionHub.
  *
+ * Optional fields E, F, G set the RGB lights (0..255 each, 0,0,0 = off), e.g.
+ *   {"A":vx,"B":vy,"C":omega,"D":seq,"E":r,"F":g,"G":b}
+ * Messages without them (CarVisionHub) leave the lights as they are.
+ *
  * Needs the SoftPWM library (Library Manager: "SoftPWM" by Brett Hagman).
  * Board: Arduino Uno. Serial (pins 0/1) is shared with the ESP32-CAM, so
  * nothing else may be printed to Serial and the Serial Monitor shows nothing
@@ -50,6 +54,12 @@ static const bool MOTOR_REVERSED[4] = {true, false, false, true};
 // SoftPWM ramp time. Softens current spikes on direction changes; short
 // enough that the hub's controller doesn't notice the lag.
 #define FADE_MS 40
+
+// ---- Lights ----
+// RGB LED pins (R, G, B) and brightness balance from SunFounder's rgb.h: the
+// green and blue LEDs are much brighter than the red one at the same PWM.
+static const uint8_t RGB_PINS[3] = {12, 13, 11};
+static const float RGB_BALANCE[3] = {1.0, 0.16, 0.30};
 
 // ---- Safety ----
 // The hub sends 20 commands per second. If none arrives for this long
@@ -161,23 +171,46 @@ void stopMotors() {
   drive(0, 0, 0);
 }
 
-// Parses the first four fields of "<vx>;<vy>;<omega>;<seq>;...". Returns
-// false for any other WS+ message (e.g. the SunFounder phone app).
-bool parseCommand(const char *s, long out[4]) {
-  for (uint8_t i = 0; i < 4; i++) {
+// r, g, b: 0..255, or -1 to leave the lights as they are.
+void setLights(long r, long g, long b) {
+  static long current[3] = {0, 0, 0};
+  long want[3] = {r, g, b};
+  for (uint8_t i = 0; i < 3; i++) {
+    if (want[i] < 0) return;
+  }
+  for (uint8_t i = 0; i < 3; i++) {
+    if (want[i] == current[i]) continue;
+    current[i] = want[i];
+    SoftPWMSet(RGB_PINS[i], constrain(want[i], 0, 255) * RGB_BALANCE[i]);
+  }
+}
+
+// Parses "<vx>;<vy>;<omega>;<seq>;<r>;<g>;<b>;...". The first four fields are
+// required: returns false for any other WS+ message (e.g. the SunFounder phone
+// app). Missing light fields come back as -1.
+bool parseCommand(const char *s, long out[7]) {
+  for (uint8_t i = 4; i < 7; i++) out[i] = -1;
+  for (uint8_t i = 0; i < 7; i++) {
     char *end;
-    out[i] = strtol(s, &end, 10);
-    if (end == s || *end != ';') return false;
-    s = end + 1;
+    long v = strtol(s, &end, 10);
+    if (end != s && *end == ';') {
+      out[i] = v;
+    } else if (i < 4) {
+      return false;
+    }
+    const char *next = strchr(s, ';');
+    if (next == NULL) break;
+    s = next + 1;
   }
   return true;
 }
 
 void handleLine() {
   if (startsWith(line, "WS+")) {
-    long v[4];
+    long v[7];
     if (!parseCommand(line + 3, v)) return;
     drive(v[0] / 1000.0, v[1] / 1000.0, v[2] / 1000.0);
+    setLights(v[4], v[5], v[6]);
     lastCommandAt = millis();
     if (millis() - lastAckAt >= ACK_INTERVAL_MS) {
       // "WS+" lines are forwarded by the ESP32 to every WebSocket client.
@@ -197,6 +230,10 @@ void setup() {
   for (uint8_t i = 0; i < 8; i++) {
     SoftPWMSet(MOTOR_PINS[i], 0);
     SoftPWMSetFadeTime(MOTOR_PINS[i], FADE_MS, FADE_MS);
+  }
+  for (uint8_t i = 0; i < 3; i++) {
+    SoftPWMSet(RGB_PINS[i], 0);
+    SoftPWMSetFadeTime(RGB_PINS[i], 100, 100);
   }
   startEsp();
 }
