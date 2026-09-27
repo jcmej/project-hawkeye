@@ -77,6 +77,8 @@ struct ARCalibrationStatus: Equatable {
     var depthWarning: String?
     /// Learned car outline (nil until learned).
     var carProfile: CarProfile?
+    /// Depth tracking lost the car; it resumes only after the car's marker is seen again.
+    var carLost = false
     /// Frames collected while learning the car shape (nil when not learning).
     var carLearnProgress: Int?
     var carLearnMessage: String?
@@ -103,6 +105,14 @@ private struct FrameGeometry {
         guard abs(c.z) > 1e-4 else { return nil }
         return CGPoint(x: CGFloat(cx + fx * c.x / -c.z),
                        y: CGFloat(cy + fy * c.y / c.z))
+    }
+
+    /// True if a world point is in front of the camera and inside the image.
+    func isInView(_ p: simd_float3, width: CGFloat, height: CGFloat) -> Bool {
+        let c = worldToCamera * simd_float4(p, 1)
+        guard c.z < -0.05 else { return false }            // must be in front of the camera
+        guard let px = project(p) else { return false }
+        return px.x >= 0 && px.x <= width && px.y >= 0 && px.y <= height
     }
 
     /// Captured-image pixel -> point on the horizontal plane at height `planeY`.
@@ -168,7 +178,13 @@ final class ARCameraManager: NSObject, ARSessionDelegate {
     private var trackTurnRate = 0.0                // rad/s
     private var typicalInliers = 0.0               // points inside the outline when the marker is seen
     private var pendingDepthCar: Pose?
-    private let trackHold = 1.0                    // s to keep the last pose if tracking fails
+    private let trackHold = 0.7                    // s to keep the last pose if fits fail (for masking)
+    private var typicalCoverage = 0.0              // fraction of outline cells with points, marker-seen
+    private var lastMarkerAnchor: TimeInterval = 0 // last time a marker re-anchored the tracker
+    private var trackingLocked = false             // lost: wait for a marker before depth tracking again
+    private let maxDepthOnly = 5.0                 // s of depth-only tracking between marker readings
+    private let minInlierFraction = 0.6            // of the car's typical point count
+    private let minCoverageFraction = 0.8          // of the car's typical outline coverage (2 cm cells)
 
     // Car shape + clearance (AR-queue state)
     private var carProfile: CarProfile?
@@ -244,6 +260,11 @@ final class ARCameraManager: NSObject, ARSessionDelegate {
             let m = Int(2 * self.learnWindow / self.learnCell)
             self.learnCounts = [Int](repeating: 0, count: m * m)
             self.learnHeights = []
+            self.trackedCar = nil
+            self.trackingLocked = false
+            self.typicalInliers = 0
+            self.typicalCoverage = 0
+            self.status.carLost = false
             self.status.carLearnProgress = 0
             self.status.carLearnMessage = nil
         }
@@ -636,7 +657,19 @@ final class ARCameraManager: NSObject, ARSessionDelegate {
 
         // ---- Car pose: marker when fresh, otherwise depth tracking of the learned outline ----
         let marker = carPose?()
-        let pose = updateCarTracking(marker: marker, t: frame.timestamp, ax: pax, ay: pay, heights: heights)
+        // Arena (cm) -> world, to check whether a car position is inside the camera's view.
+        let arenaCorners = MarkerIDs.cornerWorldPositions(arena).map { CGPoint(x: $0.x, y: $0.y) }
+        let worldXZ = MarkerIDs.corners.compactMap { corners[$0] }.map { Vec2(Double($0.x), Double($0.z)) }
+        let toWorld = Homography.fromFourPoints(src: arenaCorners, dst: worldXZ)
+        let imgSize = frame.camera.imageResolution
+        let carMidHeight = Float((carProfile?.height ?? 8) / 200)
+        func inView(_ c: Vec2) -> Bool {
+            guard let toWorld, let w = toWorld.apply(CGPoint(x: c.x, y: c.y)) else { return false }
+            let p = simd_float3(Float(w.x), pc0 + pa * Float(w.x) + pb * Float(w.y) + carMidHeight, Float(w.y))
+            return geo.isInView(p, width: imgSize.width, height: imgSize.height)
+        }
+        let pose = updateCarTracking(marker: marker, t: frame.timestamp, ax: pax, ay: pay,
+                                     heights: heights, inView: inView)
         let profile = carProfile
 
         // ---- Update the persistent map ----
@@ -677,15 +710,22 @@ final class ARCameraManager: NSObject, ARSessionDelegate {
         }
     }
 
-    /// Car pose for this frame. A fresh marker reading is authoritative and re-anchors
-    /// the tracker. Otherwise, with a learned outline, search small moves and turns
-    /// around the predicted pose for the one that puts the most raised depth points
-    /// inside the outline. Searching only small turns keeps front and back from swapping.
-    /// Returns nil when there's no pose to use (never seen, or lost for over `trackHold`).
+    /// Car pose for this frame.
+    ///
+    /// - A fresh marker reading is authoritative: it re-anchors the tracker and unlocks it.
+    /// - Otherwise, with a learned outline, search small moves/turns around the predicted
+    ///   pose for the best fit of raised depth points to the outline. A fit counts only if
+    ///   it explains most of the points the car normally shows AND covers most of its
+    ///   outline (so smaller clutter can't pass as the car).
+    /// - The car is declared LOST — and depth tracking stays off until the marker is seen
+    ///   again — if its predicted position leaves the camera's view, fits fail for
+    ///   `trackHold`, or it's been tracked by depth alone for `maxDepthOnly`.
     private func updateCarTracking(marker: (pose: Pose, age: Double)?, t: TimeInterval,
-                                   ax: [Float], ay: [Float], heights: [Float]) -> Pose? {
+                                   ax: [Float], ay: [Float], heights: [Float],
+                                   inView: (Vec2) -> Bool) -> Pose? {
         guard let profile = carProfile else {
             trackedCar = nil
+            status.carLost = false
             return marker?.pose                     // no outline yet: marker only
         }
 
@@ -695,42 +735,91 @@ final class ARCameraManager: NSObject, ARSessionDelegate {
             var pts: [Vec2] = []
             for i in ax.indices where heights[i] > 0.015 && heights[i] < maxH {
                 let p = Vec2(Double(ax[i]), Double(ay[i]))
-                if p.distance(to: c) < 50 { pts.append(p) }
-            }
-            if pts.count > 300 {                    // subsample for speed
-                let step = Double(pts.count) / 300
-                pts = (0..<300).map { pts[Int(Double($0) * step)] }
+                if p.distance(to: c) < 45 { pts.append(p) }
             }
             return pts
         }
+        func subsample(_ pts: [Vec2]) -> [Vec2] {   // for the pose search (speed)
+            guard pts.count > 150 else { return pts }
+            let step = Double(pts.count) / 150
+            return (0..<150).map { pts[Int(Double($0) * step)] }
+        }
+        // Points inside the outline at a pose.
         func inliers(_ pose: Pose, _ pts: [Vec2]) -> Int {
             var n = 0
-            for p in pts where profile.distance(to: (p - pose.position).rotated(by: -pose.heading)) < 1 { n += 1 }
+            let c = cos(-pose.heading), s = sin(-pose.heading)
+            for p in pts {
+                let dx = p.x - pose.position.x, dy = p.y - pose.position.y
+                if profile.distance(to: Vec2(dx * c - dy * s, dx * s + dy * c)) < 1 { n += 1 }
+            }
             return n
         }
+        // Fraction of the outline's 2 cm cells containing at least one point (all points,
+        // not the subsample). A smaller object can't fill the car's outline.
+        let cellsF = max(1, Int(ceil(profile.length / 2))), cellsL = max(1, Int(ceil(profile.width / 2)))
+        func coverage(_ pose: Pose, _ pts: [Vec2]) -> Double {
+            var covered = Set<Int>()
+            let c = cos(-pose.heading), s = sin(-pose.heading)
+            for p in pts {
+                let dx = p.x - pose.position.x, dy = p.y - pose.position.y
+                let q = Vec2(dx * c - dy * s, dx * s + dy * c)
+                guard profile.distance(to: q) < 1 else { continue }
+                let fi = min(cellsF - 1, max(0, Int((q.x - profile.minForward) / 2)))
+                let li = min(cellsL - 1, max(0, Int((q.y - profile.minLeft) / 2)))
+                covered.insert(fi * cellsL + li)
+            }
+            return Double(covered.count) / Double(cellsF * cellsL)
+        }
+        func lose() -> Pose? {
+            trackedCar = nil
+            trackVelocity = .zero
+            trackTurnRate = 0
+            trackingLocked = true
+            status.carLost = true
+            return nil
+        }
 
+        // 1) Marker: authoritative, re-anchors and unlocks.
         if let m = marker, m.age < 0.1 {
             if let prev = trackedCar, t - trackedTime > 0.01, t - trackedTime < 0.5 {
                 let dt = t - trackedTime
                 trackVelocity = trackVelocity * 0.5 + (m.pose.position - prev.position) * (0.5 / dt)
                 trackTurnRate = trackTurnRate * 0.5 + wrapAngle(m.pose.heading - prev.heading) * (0.5 / dt)
             }
-            let n = Double(inliers(m.pose, candidates(near: m.pose.position)))
-            typicalInliers = typicalInliers == 0 ? n : typicalInliers * 0.9 + n * 0.1
+            let all = candidates(near: m.pose.position)
+            let n = Double(inliers(m.pose, all))
+            if n >= 10 {                            // learn what the car normally looks like
+                let cov = coverage(m.pose, all)
+                typicalInliers = typicalInliers == 0 ? n : typicalInliers * 0.9 + n * 0.1
+                typicalCoverage = typicalCoverage == 0 ? cov : typicalCoverage * 0.9 + cov * 0.1
+            }
             trackedCar = m.pose
             trackedTime = t
+            lastMarkerAnchor = t
+            trackingLocked = false
+            status.carLost = false
             return m.pose
         }
 
-        guard let last = trackedCar else { return nil }
+        // 2) Depth tracking, only if not locked out and we know what the car looks like.
+        guard !trackingLocked, let last = trackedCar, typicalInliers >= 20 else {
+            if trackedCar != nil || trackingLocked { return lose() }
+            return nil
+        }
         let dt = min(t - trackedTime, 0.2)
         let predicted = Pose(position: last.position + trackVelocity * dt,
                              heading: wrapAngle(last.heading + trackTurnRate * dt))
-        let pts = candidates(near: predicted.position)
 
-        // Coarse search (±8 cm, ±20°), then fine search around the best.
-        func search(around c: Pose, range: Double, step: Double, turn: Double, turnStep: Double) -> (Pose, Int) {
-            var best = (c, -1)
+        // Out of the camera's view => the phone can't be seeing it: lost, not "somewhere nearby".
+        if !inView(predicted.position) { return lose() }
+        // Depth alone for too long => require a marker reading before trusting it again.
+        if t - lastMarkerAnchor > maxDepthOnly { return lose() }
+
+        let allPts = candidates(near: predicted.position)
+        let pts = subsample(allPts)
+        func search(around c: Pose, range: Double, step: Double, turn: Double, turnStep: Double)
+            -> (pose: Pose, inliers: Int) {
+            var best = (pose: c, inliers: -1)
             var bestScore = -Double.infinity
             var dx = -range
             while dx <= range + 1e-9 {
@@ -740,7 +829,6 @@ final class ARCameraManager: NSObject, ARSessionDelegate {
                     while dth <= turn + 1e-9 {
                         let cand = Pose(position: c.position + Vec2(dx, dy), heading: wrapAngle(c.heading + dth))
                         let n = inliers(cand, pts)
-                        // Prefer the smallest move among equally good fits.
                         let score = Double(n) - 0.02 * (dx * dx + dy * dy).squareRoot() - 2 * abs(dth)
                         if score > bestScore { bestScore = score; best = (cand, n) }
                         dth += turnStep
@@ -752,27 +840,28 @@ final class ARCameraManager: NSObject, ARSessionDelegate {
             return best
         }
         let deg = Double.pi / 180
-        let coarse = search(around: predicted, range: 8, step: 2, turn: 20 * deg, turnStep: 5 * deg)
-        let fine = search(around: coarse.0, range: 2, step: 0.5, turn: 4 * deg, turnStep: 1 * deg)
+        let coarse = search(around: predicted, range: 8, step: 2, turn: 15 * deg, turnStep: 5 * deg)
+        let fine = search(around: coarse.pose, range: 1.5, step: 0.5, turn: 3 * deg, turnStep: 1 * deg)
 
-        let needed = max(15, Int(0.4 * typicalInliers))
-        if fine.1 >= needed {
+        // Judge the fit on ALL nearby points (the subsample is only for searching quickly;
+        // with clutter nearby, fewer of its points land on the car).
+        let enoughPoints = Double(inliers(fine.pose, allPts)) >= max(20, minInlierFraction * typicalInliers)
+        let enoughCoverage = enoughPoints
+            && coverage(fine.pose, allPts) >= minCoverageFraction * typicalCoverage
+        if enoughPoints && enoughCoverage {
             let ddt = max(t - trackedTime, 0.01)
-            trackVelocity = trackVelocity * 0.5 + (fine.0.position - last.position) * (0.5 / ddt)
-            trackTurnRate = trackTurnRate * 0.5 + wrapAngle(fine.0.heading - last.heading) * (0.5 / ddt)
-            trackedCar = fine.0
+            trackVelocity = trackVelocity * 0.5 + (fine.pose.position - last.position) * (0.5 / ddt)
+            trackTurnRate = trackTurnRate * 0.5 + wrapAngle(fine.pose.heading - last.heading) * (0.5 / ddt)
+            trackedCar = fine.pose
             trackedTime = t
-            pendingDepthCar = fine.0
-            return fine.0
+            pendingDepthCar = fine.pose
+            status.carLost = false
+            return fine.pose
         }
 
-        // Not enough of the car visible (e.g. fully blocked): hold the last pose briefly
-        // so its footprint stays masked, but don't report it as a fresh position.
+        // Fit failed: hold the last pose briefly (keeps its footprint masked), then give up.
         if t - trackedTime < trackHold { return last }
-        trackedCar = nil
-        trackVelocity = .zero
-        trackTurnRate = 0
-        return nil
+        return lose()
     }
 
     /// One frame of car-shape learning. The marker says where the car is, so the car

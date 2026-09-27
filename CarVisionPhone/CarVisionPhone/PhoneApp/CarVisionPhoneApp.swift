@@ -191,10 +191,12 @@ struct ContentView: View {
             VStack(spacing: 4) {
                 Image(systemName: "exclamationmark.triangle.fill")
                     .font(.title3)
-                Text("Car not in view")
+                Text(model.arStatus.carLost ? "Car lost" : "Car not in view")
                     .font(.caption.bold())
-                Text("Point the phone at the car")
+                Text(model.arStatus.carLost ? "Show the car's marker to the camera to resume"
+                                            : "Point the phone at the car")
                     .font(.caption2)
+                    .multilineTextAlignment(.center)
             }
             .foregroundColor(.white)
             .padding(8)
