@@ -1,0 +1,27 @@
+**The recording points to tracking dropouts and map-clearance checks—not obstacle checking happening too often.** It also exposes a mismatch I introduced between your phone’s tracking capabilities and Python’s acceptance rules.
+
+| Recording | What it shows |
+|---|---|
+| Around **00:36** | “No safe route,” despite **0 occupied cells**. The goal is near the upper arena boundary. |
+| Around **00:43–00:55** | The phone reports a car position **“tracked by LiDAR,”** while navigation says **“Waiting for car marker ID 0.”** |
+| Throughout much of the run | Processing is roughly **6–9 FPS**, and marker detection comes and goes. |
+| Around **01:25** | Clearance reports **“2 cm back”** with no obvious separate obstacle immediately behind the car. |
+
+**The main issue is my marker-only restriction.** Your teammate built LiDAR tracking to bridge unreadable markers, but Python currently rejects those poses. One frame without a confirmed marker disarms the run—even when the phone still knows where the car is. At the observed frame rate, that makes movement fragile.
+
+The Start button also directly follows marker visibility, explaining its flickering. The controller does not automatically resume after a stop; repeated `Driving` entries require fresh Start requests.
+
+**“No safe route” is a separate issue.** The planner checks the entire car footprint, including its margin, rather than just a line between two points. With the default settings, the car center and goal need **18 cm clearance from the arena edges**. Several goal placements appear too close to that boundary.
+
+It also treats **unobserved floor as blocked**. Your mini-map currently distinguishes neither unknown floor from observed free floor nor the boundary clearance zone. Consequently, a route can look clear while being invalid to Python. The video cannot tell us which grid cells were unknown.
+
+**The learned footprint deserves attention too.** It reads **12 × 12 cm**, later **10 × 10 cm**, which appears to describe only part of the vehicle. The rear proximity warnings could therefore be its own wheels or chassis being classified as obstacles. That’s a plausible explanation, not something the recording alone proves. Python’s planning footprint still comes from the configured car radius.
+
+I’d make these targeted changes next:
+
+1. **Use the phone’s validated LiDAR tracking for brief marker gaps**, with explicit tracking age and quality checks. Requiring constant marker detection defeats the fallback your teammate built.
+2. **Separate a brief tracking interruption from a lost car:** command zero during uncertainty, preserve the run briefly, and resume only after consistent reacquisition. Sustained loss should still require Start.
+3. **Explain route rejection precisely:** “goal too close to boundary,” “unobserved floor,” or “obstacle clearance.” Show unknown space and the usable boundary on the existing mini-map.
+4. **Check the learned outline against the full physical car** before trusting its clearance warnings.
+
+For the next physical test, keep the phone fixed, place the goal well inside the arena, and use a larger, crisp car marker. **I would keep obstacle checks frequent; reducing their frequency would leave these actual causes unresolved.**
