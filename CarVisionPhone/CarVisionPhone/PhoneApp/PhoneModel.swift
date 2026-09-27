@@ -58,6 +58,8 @@ final class VisionPipeline {
                 depthOccupancy: Data? = nil,
                 clearance: ClearanceInfo? = nil,
                 depthCar: Pose? = nil,
+                depthMarkerAge: Double? = nil,
+                depthTrackQuality: Double? = nil,
                 allowCameraBackground: Bool = true) -> [ArucoMarker] {
         let processingStarted = Date().timeIntervalSince1970
         latestTime = t
@@ -99,6 +101,11 @@ final class VisionPipeline {
                                                    time: t, fps: Double(frameTimes.count))
         msg.arena = perception.settings.arena
         msg.carSource = frameDebug.carSource
+        if frameDebug.carSource == "LiDAR" {
+            // Python trusts a depth-tracked pose only with a recent marker and a good fit.
+            msg.markerAge = depthMarkerAge
+            msg.trackQuality = depthTrackQuality
+        }
         msg.sentAt = processingStarted
         if arMode && projection == nil {
             msg.calibrated = false
@@ -179,7 +186,9 @@ final class PhoneModel: ObservableObject {
         if !navigationOnline { return "Waiting for a reply from Python" }
         if navigationState == "blocked" { return navigationStatus }
         if !debug.calibrated { return "Waiting for valid arena calibration / AR tracking" }
-        if debug.car == nil || debug.carSource != "marker" { return "Waiting for car marker ID 0" }
+        // Brief gaps (a missed frame, LiDAR tracking) don't disable Start: Python checks
+        // the pose it actually plans from and replies with the reason if it can't use it.
+        if (debug.carMissingFor ?? 0) > 1 { return "Waiting for car marker ID 0" }
         if debug.goal == nil { return "Waiting for the pinned goal coordinates" }
         return nil
     }
@@ -237,6 +246,8 @@ final class PhoneModel: ObservableObject {
                 return p.handle(pixelBuffer: pb, time: t, arMode: true, projection: projection,
                                 depthOccupancy: depth.occupancy, clearance: depth.clearance,
                                 depthCar: depth.depthTrackedCar,
+                                depthMarkerAge: depth.depthMarkerAge,
+                                depthTrackQuality: depth.depthTrackQuality,
                                 allowCameraBackground: !lidarMode)
             }
             a.carPose = { p.lastMarkerCarPose }

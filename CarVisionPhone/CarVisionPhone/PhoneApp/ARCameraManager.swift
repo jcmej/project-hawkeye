@@ -44,6 +44,11 @@ struct DepthResult {
     /// Car pose found by matching the learned outline to depth points, when the
     /// marker wasn't readable this frame (nil if the marker was used or tracking failed).
     var depthTrackedCar: Pose?
+    /// With `depthTrackedCar`: seconds since a marker reading anchored the tracker.
+    var depthMarkerAge: Double?
+    /// With `depthTrackedCar`: the fit relative to the car's usual one, 0...1
+    /// (the weaker of the point count and outline coverage ratios).
+    var depthTrackQuality: Double?
 }
 
 /// Nearest obstacle to the car's outline, from one frame of LiDAR.
@@ -178,6 +183,8 @@ final class ARCameraManager: NSObject, ARSessionDelegate {
     private var trackTurnRate = 0.0                // rad/s
     private var typicalInliers = 0.0               // points inside the outline when the marker is seen
     private var pendingDepthCar: Pose?
+    private var pendingDepthMarkerAge: Double?
+    private var pendingDepthQuality: Double?
     private let trackHold = 0.7                    // s to keep the last pose if fits fail (for masking)
     private var typicalCoverage = 0.0              // fraction of outline cells with points, marker-seen
     private var lastMarkerAnchor: TimeInterval = 0 // last time a marker re-anchored the tracker
@@ -371,9 +378,13 @@ final class ARCameraManager: NSObject, ARSessionDelegate {
 
         pendingClearance = nil
         pendingDepthCar = nil
+        pendingDepthMarkerAge = nil
+        pendingDepthQuality = nil
         let occupancy = projection != nil ? depthOccupancy(frame, geo) : nil
         let result = DepthResult(occupancy: occupancy, clearance: pendingClearance,
-                                 depthTrackedCar: pendingDepthCar)
+                                 depthTrackedCar: pendingDepthCar,
+                                 depthMarkerAge: pendingDepthMarkerAge,
+                                 depthTrackQuality: pendingDepthQuality)
 
         // Do not keep a reference to `frame` beyond this call (ARKit stalls if frames are retained).
         let markers = onFrame?(frame.capturedImage, t, projection, result) ?? []
@@ -676,6 +687,10 @@ final class ARCameraManager: NSObject, ARSessionDelegate {
         let carClear = arena.carRadius + carClearPadding
         func isCar(_ c: Vec2) -> Bool {
             guard let pose else { return false }
+            // A single fixed phone can't see the car's far side, so a learned outline may
+            // cover only part of it. The configured radius (set to enclose the whole car)
+            // is the minimum; otherwise uncovered chassis becomes "obstacles" around the car.
+            if c.distance(to: pose.position) < arena.carRadius { return true }
             if let profile {
                 let q = (c - pose.position).rotated(by: -pose.heading)
                 return profile.distance(to: q) < carMargin + GridSpec.cellSize / 2
@@ -845,10 +860,13 @@ final class ARCameraManager: NSObject, ARSessionDelegate {
 
         // Judge the fit on ALL nearby points (the subsample is only for searching quickly;
         // with clutter nearby, fewer of its points land on the car).
-        let enoughPoints = Double(inliers(fine.pose, allPts)) >= max(20, minInlierFraction * typicalInliers)
-        let enoughCoverage = enoughPoints
-            && coverage(fine.pose, allPts) >= minCoverageFraction * typicalCoverage
+        let fitPoints = Double(inliers(fine.pose, allPts))
+        let enoughPoints = fitPoints >= max(20, minInlierFraction * typicalInliers)
+        let fitCoverage = enoughPoints ? coverage(fine.pose, allPts) : 0
+        let enoughCoverage = enoughPoints && fitCoverage >= minCoverageFraction * typicalCoverage
         if enoughPoints && enoughCoverage {
+            pendingDepthMarkerAge = t - lastMarkerAnchor
+            pendingDepthQuality = min(1, fitPoints / typicalInliers, fitCoverage / max(typicalCoverage, 1e-6))
             let ddt = max(t - trackedTime, 0.01)
             trackVelocity = trackVelocity * 0.5 + (fine.pose.position - last.position) * (0.5 / ddt)
             trackTurnRate = trackTurnRate * 0.5 + wrapAngle(fine.pose.heading - last.heading) * (0.5 / ddt)

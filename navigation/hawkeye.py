@@ -7,6 +7,18 @@ import uuid
 
 AGE = .4
 CELL = 5
+# Tracking gaps. A LiDAR (depth-tracked) car pose counts only if the phone read
+# the marker within MARKER_GAP and the outline fit is at least MIN_TRACK_QUALITY
+# of the car's usual fit; it then drives at LIDAR_SPEED of normal power. Without
+# a trusted pose the run holds (zero motor commands) for up to HOLD, resumes
+# after RESUME_FRAMES consistent readings, and otherwise stops.
+MARKER_GAP = 1.5
+MIN_TRACK_QUALITY = .75
+LIDAR_SPEED = .6
+HOLD = 1.5
+RESUME_FRAMES = 3
+RESUME_JUMP = 5    # cm between consecutive readings while reacquiring
+MAX_JUMP = 12      # cm between consecutive readings while driving
 
 
 def num(x):
@@ -30,6 +42,7 @@ class Map:
         self.w, self.h, radius, margin, obstacle_radius = self.settings
         if not (20 < self.w <= 500 and 20 < self.h <= 500 and 0 < radius <= 60 and 0 < margin <= 30 and 0 < obstacle_radius <= 60):
             raise ValueError('Invalid arena dimensions or clearance')
+        self.car_radius = radius
         self.radius = radius + margin
         self.cols, self.rows = math.ceil(self.w / CELL), math.ceil(self.h / CELL)
         grid = msg['grid']
@@ -47,6 +60,18 @@ class Map:
 
     def center(self, i):
         return ((i % self.cols + .5)*CELL, (i // self.cols + .5)*CELL)
+
+    def mask_car(self, p):
+        """The car is not an obstacle to itself. The phone masks it using its learned
+        outline, which can miss parts of the car (or lag it), so also clear every
+        cell under the configured car radius as seen, free floor."""
+        reach = self.car_radius + CELL/2
+        for y in range(max(0, int((p[1]-reach)//CELL)), min(self.rows, int((p[1]+reach)//CELL)+1)):
+            for x in range(max(0, int((p[0]-reach)//CELL)), min(self.cols, int((p[0]+reach)//CELL)+1)):
+                i = y*self.cols+x
+                if dist(self.center(i), p) <= reach:
+                    self.occupied.discard(i)
+                    self.known.add(i)
 
     def index(self, p):
         return int(p[1]//CELL)*self.cols + int(p[0]//CELL)
@@ -128,6 +153,9 @@ class Navigator:
         self.goal = None
         self.path = []
         self.heading = 0
+        self.pose = None         # last trusted (position, heading, source)
+        self.hold_since = None   # set while holding for a trusted pose
+        self.good = 0            # consistent readings while reacquiring
         self.running = False
         self.state, self.message = 'waiting', 'Waiting for iPhone'
 
@@ -188,23 +216,32 @@ class Navigator:
             if error:
                 self.stop(error)
                 return
+            pose, why = self.tracked_car(m)
             live_map = Map(m)
             goal = point(m['goal'])
             if new_request:
+                if pose is None:
+                    self.stop(why)
+                    return
                 self.stop('Planning')
+                live_map.mask_car(pose[0])
                 self.map, self.goal = live_map, goal
-                self.path = self.map.plan(point(m['car']['position']), goal)
+                self.path = self.map.plan(pose[0], goal)
                 if not self.path:
                     self.stop('No safe route — check map coverage and clearance')
                     return
-                self.heading = num(m['car']['heading'])
+                self.heading = pose[1]
+                self.pose, self.hold_since, self.good = pose, None, 0
                 self.running = True
-                self.state, self.message = 'driving', 'Dry run — motors disabled' if self.dry_run else 'Driving'
+                self.state, self.message = 'driving', self.driving_message()
             elif self.running:
                 if live_map.settings != self.map.settings or dist(goal, self.goal) > 2:
                     self.stop('Goal or arena changed — tap Start again')
                     return
-                # Keep the initial map. New evidence may block it, never silently clear it.
+                self.track(pose, why, now)
+                # Keep the initial map. New evidence may block it, never silently clear it,
+                # except where the car itself is (last trusted position while holding).
+                live_map.mask_car(self.pose[0])
                 self.map.occupied |= live_map.occupied
                 self.map.obstacles.update(live_map.obstacles)
         except (KeyError, TypeError, ValueError, AttributeError, OverflowError) as e:
@@ -220,27 +257,72 @@ class Navigator:
             return 'AR tracking unavailable'
         if m.get('veto') is not False:
             return 'Obstacle warning — stopped'
-        if not m.get('car') or m.get('carSource') != 'marker':
-            return 'Car marker not visible'
-        point(m['car']['position'])
-        num(m['car']['heading'])
-        if not 0 < num(m['carConfidence']) <= 1:
-            return 'Car observation uncertain'
         if not m.get('goal'):
             return 'Pin a goal first'
         if not m.get('grid'):
             return 'Scan the obstacle map first'
         return None
 
+    def tracked_car(self, m):
+        """The car's (position, heading, source) from one observation, or None and the
+        reason it can't be trusted. Not trusting a pose holds a run; it doesn't end it."""
+        car, source = m.get('car'), m.get('carSource')
+        if not car:
+            return None, 'Car not visible'
+        p, heading = point(car['position']), num(car['heading'])
+        if not 0 < num(m['carConfidence']) <= 1:
+            return None, 'Car observation uncertain'
+        if source == 'LiDAR':
+            age, quality = m.get('markerAge'), m.get('trackQuality')
+            if age is None or quality is None:
+                return None, 'Car marker not visible'   # phone app too old to rate LiDAR poses
+            if not 0 <= num(age) <= MARKER_GAP:
+                return None, 'Car marker not seen recently'
+            if not MIN_TRACK_QUALITY <= num(quality) <= 1:
+                return None, 'LiDAR car fit too weak'
+        elif source != 'marker':
+            return None, 'Car marker not visible'
+        return (p, heading, source), None
+
+    def track(self, pose, why, now):
+        """Update the trusted pose during a run, entering or leaving the holding state."""
+        if pose is not None and self.hold_since is None and dist(pose[0], self.pose[0]) > MAX_JUMP:
+            pose, why = None, 'Car position jumped'
+        if pose is None:
+            self.good = 0
+            if self.hold_since is None:
+                self.hold_since = now
+            self.state, self.message = 'holding', f'{why} — holding'
+            return
+        if self.hold_since is None:
+            self.pose = pose
+            return
+        consistent = self.good > 0 and dist(pose[0], self.pose[0]) <= RESUME_JUMP
+        self.good = self.good + 1 if consistent else 1
+        self.pose = pose
+        if self.good >= RESUME_FRAMES:
+            self.hold_since, self.good = None, 0
+            self.state, self.message = 'driving', self.driving_message()
+        else:
+            self.message = 'Car found — confirming position'
+
+    def driving_message(self):
+        return 'Dry run — motors disabled' if self.dry_run else 'Driving'
+
     def command(self, now=None, car_ready=True):
         if not self.running:
             return (0, 0, 0)
+        now = time.monotonic() if now is None else now
         try:
-            error = self.problem(time.monotonic() if now is None else now, car_ready)
+            error = self.problem(now, car_ready)
             if error:
                 self.stop(error)
                 return (0, 0, 0)
-            p, heading = point(self.msg['car']['position']), num(self.msg['car']['heading'])
+            if self.hold_since is not None:
+                if now - self.hold_since > HOLD:
+                    self.stop('Car lost — tap Start after recovery')
+                return (0, 0, 0)
+            p, heading, source = self.pose
             if not self.map.free(p):
                 self.stop('Obstacle too close or car outside mapped space')
                 return (0, 0, 0)
@@ -258,6 +340,8 @@ class Navigator:
                 self.stop('Route needs replanning — tap Start')
                 return (0, 0, 0)
             speed = self.speed*min(1, max(.4, dist(p, self.goal)/30))
+            if source == 'LiDAR':
+                speed *= LIDAR_SPEED
             x, y = (target[0]-p[0])*speed/d, (target[1]-p[1])*speed/d
             angle = (self.heading-heading+math.pi) % (2*math.pi)-math.pi
             omega = max(-.2, min(.2, angle*1.2))

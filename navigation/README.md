@@ -73,10 +73,18 @@ after updating to see these diagnostics.
   cannot erase its original obstacles. To change the scene, Stop, use the
   existing Clear obstacles / rescan controls, and Start again.
 - The planner uses A* and the controller follows clear segments while holding
-  its starting heading. Live marker observations correct the car's movement.
-  Marker loss, AR failure, phone veto, stale packets, car acknowledgment loss,
-  changed goal/dimensions, or a blocked route stops the run. Recovery requires
-  another tap on Start. Depth-only car tracking is excluded from motor control.
+  its starting heading. Live car observations correct the car's movement.
+- A LiDAR (depth-tracked) car pose is used only if the marker was read within
+  the last 1.5 s and the outline fit is at least 75% as good as usual; the car
+  then drives at 60% power. Any untrusted pose (car not visible, weak fit, old
+  marker, a jump of more than 12 cm) **holds** the run: zero motor commands, and
+  driving resumes after 3 consistent readings. Holding for more than 1.5 s
+  stops the run. The tuning constants are at the top of `hawkeye.py`.
+- AR failure, phone veto, stale packets, car acknowledgment loss, changed
+  goal/dimensions, or a blocked route stop the run at once. Recovery requires
+  another tap on Start.
+- Cells within the car radius of the car's position are never obstacles, so
+  parts of the car its learned outline missed can't block its own route.
 - The phone sends Stop when backgrounded and before resets/settings changes.
   Losing the phone's stream stops motion within the 0.4 s observation timeout;
   the existing firmware independently stops after 0.3 s without motor commands.

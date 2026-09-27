@@ -75,7 +75,7 @@ class NavigationTests(unittest.TestCase):
         self.assertFalse(self.nav.running)
 
     def test_veto_source_goal_and_ack_stop(self):
-        for change in ({'veto': True}, {'calibrated': False}, {'carSource': 'LiDAR'}, {'goal': {'x': 100, 'y': 120}}, {'grid': None}):
+        for change in ({'veto': True}, {'calibrated': False}, {'goal': {'x': 100, 'y': 120}}, {'grid': None}):
             self.setUp()
             m = self.start()
             m.update(change)
@@ -103,11 +103,86 @@ class NavigationTests(unittest.TestCase):
 
     def test_new_obstacle_cannot_be_erased(self):
         m = self.start()
-        blocked = observation(occupied=[6*40+8])['grid']
+        # Outside the car's own body (masked), inside its clearance.
+        blocked = observation(occupied=[6*40+9])['grid']
         m.update(seq=2, grid=blocked)
         self.feed(m)
         self.nav.command(.1)
         self.assertFalse(self.nav.running)
+
+    def frame(self, m, seq, now, **change):
+        m = {**m, **change, 'seq': seq}
+        self.feed(m, now=now)
+        return self.nav.command(now)
+
+    def test_trusted_lidar_pose_drives_slower(self):
+        m = self.start()
+        marker_cmd = self.frame(m, 2, .05)
+        lidar_cmd = self.frame(m, 3, .1, carSource='LiDAR', markerAge=.8, trackQuality=.9)
+        self.assertEqual(self.nav.state, 'driving')
+        self.assertLess(math.hypot(*lidar_cmd[:2]), math.hypot(*marker_cmd[:2]))
+        self.assertGreater(math.hypot(*lidar_cmd[:2]), 0)
+
+    def test_untrusted_pose_holds_then_resumes(self):
+        m = self.start()
+        for i, change in enumerate(({'car': None}, {'carSource': 'LiDAR'},
+                                    {'carSource': 'LiDAR', 'markerAge': 2, 'trackQuality': .9},
+                                    {'carSource': 'LiDAR', 'markerAge': .5, 'trackQuality': .5})):
+            self.assertEqual(self.frame(m, 2+i, .05*(i+1), **change), (0, 0, 0), change)
+            self.assertTrue(self.nav.running)
+            self.assertEqual(self.nav.state, 'holding')
+        # Two good readings are not enough; the third resumes.
+        self.assertEqual(self.frame(m, 10, .25), (0, 0, 0))
+        self.assertEqual(self.frame(m, 11, .3), (0, 0, 0))
+        self.assertNotEqual(self.frame(m, 12, .35), (0, 0, 0))
+        self.assertEqual(self.nav.state, 'driving')
+
+    def test_inconsistent_readings_do_not_resume(self):
+        m = self.start()
+        self.frame(m, 2, .05, car=None)
+        for i in range(6):
+            x = 30 if i % 2 else 36   # alternating 6 cm apart
+            car = {'position': {'x': x, 'y': 30}, 'heading': 0}
+            self.assertEqual(self.frame(m, 3+i, .1+.05*i, car=car), (0, 0, 0))
+        self.assertEqual(self.nav.state, 'holding')
+
+    def test_long_hold_stops(self):
+        m = self.start()
+        self.frame(m, 2, 0, car=None)
+        for i in range(1, 32):
+            self.frame(m, 2+i, .05*i, car=None)
+        self.assertFalse(self.nav.running)
+        self.assertIn('Car lost', self.nav.message)
+        # Good readings after a stop do not restart without Start.
+        for i in range(5):
+            self.assertEqual(self.frame(m, 40+i, 1.6+.05*i), (0, 0, 0))
+        self.assertFalse(self.nav.running)
+
+    def test_position_jump_holds(self):
+        m = self.start()
+        car = {'position': {'x': 60, 'y': 30}, 'heading': 0}
+        self.assertEqual(self.frame(m, 2, .05, car=car), (0, 0, 0))
+        self.assertEqual(self.nav.state, 'holding')
+
+    def test_veto_still_stops_immediately(self):
+        m = self.start()
+        self.frame(m, 2, .05, car=None)
+        self.frame(m, 3, .1, veto=True)
+        self.assertFalse(self.nav.running)
+
+    def test_car_body_is_not_an_obstacle(self):
+        # Cells under the car (e.g. parts its learned outline missed) at Start and during a run.
+        body = [y*40+x for y in range(4, 8) for x in range(4, 8)]
+        m = self.start(occupied=body)
+        self.assertTrue(self.nav.running, self.nav.message)
+        grid = observation(position=(33, 30), occupied=[y*40+x for y in range(4, 8) for x in range(5, 9)])['grid']
+        car = {'position': {'x': 33, 'y': 30}, 'heading': 0}
+        self.assertNotEqual(self.frame(m, 2, .05, car=car, grid=grid), (0, 0, 0))
+        self.assertTrue(self.nav.running, self.nav.message)
+        # An obstacle beyond the car's radius still counts.
+        self.assertIn(6*40+12, Map(observation(occupied=[6*40+12])).occupied)
+        self.frame(m, 3, .1, car=car, grid=observation(occupied=[6*40+12])['grid'])
+        self.assertIn(6*40+12, self.nav.map.occupied)
 
     def test_body_frame(self):
         self.start(heading=math.pi/2)

@@ -113,6 +113,10 @@ struct ObservationMessage: Codable {
     // Python navigation metadata. Existing Mac receivers ignore these fields.
     var arena: ArenaConfig? = nil
     var carSource: String? = nil
+    /// LiDAR poses only: seconds since the marker last anchored depth tracking,
+    /// and how well the depth points fit the car's outline (1 = as well as usual).
+    var markerAge: Double? = nil
+    var trackQuality: Double? = nil
     var sentAt: Double? = nil
     var sessionId: String? = nil
     var navigation: NavigationRequest? = nil
