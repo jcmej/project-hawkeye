@@ -36,8 +36,8 @@ from websockets.sync.client import connect
 CAR_IP = sys.argv[1] if len(sys.argv) > 1 else "192.168.4.1"
 URL = f"ws://{CAR_IP}:8765"
 
-SPEED = 850    # forward/back, out of 1000
-TURN = 700     # turning, out of 1000
+SPEED = 950    # forward/back, out of 1000
+TURN = 800     # turning, out of 1000
 SEND_HZ = 20   # the firmware stops the car after 300 ms without a command
 
 # Color number -> (name, (r, g, b)). The firmware evens out the LEDs'
